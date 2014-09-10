@@ -275,7 +275,7 @@ class Player extends FlxSprite
     if(dashing){
       if(dash.timeLeft > 0){
         dash.timeLeft -= _elapsed;
-        if(dash.timeLeft <= 0 && FlxG.keys.anyPressed(["X", "NUMPADFOUR"]) && !dash.addedMoreTime){
+        if(dash.timeLeft <= 0 && _A && !dash.addedMoreTime){
           dash.timeLeft += dash.timeMore;
           dash.addedMoreTime = true;
           // trace("added more time for dash");
