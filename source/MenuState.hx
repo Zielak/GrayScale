@@ -199,7 +199,7 @@ class MenuState extends FlxState
       }
       else if(_gameLogo.animation.name == "showLogo")
       {
-        if(FlxG.keys.anyPressed(["ENTER"])){
+        if(FlxG.keys.anyPressed(["ENTER"]) || FlxG.touches.list.length > 0){
           _gameLogo.animation.play("hideLogo");
         }
       }

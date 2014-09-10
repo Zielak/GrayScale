@@ -205,11 +205,12 @@ class LevelComplete extends FlxState
         FlxG.camera.shake(0.01, 0.1, null, true, FlxCamera.SHAKE_VERTICAL_ONLY);
         _bam.play(true);
       }
-      if(_theTimer > 280 && !_footer.visible){
+      if(_theTimer > 280 && !_footer.visible)
+      {
         _footer.visible = true;
       }
 
-      if(FlxG.keys.anyPressed(["ENTER"]))
+      if( FlxG.keys.anyPressed(["ENTER"]) || FlxG.touches.list.length > 0 )
       {
         _music.stop();
         ScoreManager.instance.resetLevelScore();

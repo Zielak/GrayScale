@@ -76,7 +76,8 @@ class TheEnd extends FlxState
 
   override public function update():Void
   {
-    if(!_music.playing || FlxG.keys.anyPressed(["ENTER"])){
+    if( !_music.playing || FlxG.keys.anyPressed(["ENTER"]) || FlxG.touches.list.length > 0 )
+    {
       ScoreManager.instance.resetAllScores();
       Achievements.instance.resetGlobalTrophies();
       Achievements.instance.resetLevelTrophies();

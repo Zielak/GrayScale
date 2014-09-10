@@ -1,18 +1,20 @@
 
 package ;
 
-
 import flash.display.BitmapData;
+import flash.media.Sound;
+
 import flixel.FlxG;
 import flixel.FlxObject;
-import flixel.system.FlxSound;
 import flixel.FlxSprite;
+import flixel.input.touch.FlxTouch;
+import flixel.system.FlxSound;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import flixel.util.FlxAngle;
 import flixel.util.FlxMath;
 import flixel.util.FlxPoint;
-import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
-import flash.media.Sound;
+
 
 
 
@@ -160,7 +162,13 @@ class Player extends FlxSprite
   private var _left:Bool = false;
   private var _right:Bool = false;
   private var _A:Bool = false;
-  private var _B:Bool = false;
+  // private var _B:Bool = false; never used
+#if mobile
+  private var _touches:Array<FlxTouch>;
+  private var _dpadPoint:FlxPoint;
+  private var _touchPoint:FlxPoint;
+  private var _touchAngle:Float = 0;
+#end
 
 
 
@@ -198,7 +206,11 @@ class Player extends FlxSprite
     safeSpot.x = X;
     safeSpot.x = Y;
 
-
+#if mobile
+    _dpadPoint = new FlxPoint( 0, Std.int(FlxG.height/4*3) );
+    _touches = new Array<FlxTouch>();
+    _touchPoint = new FlxPoint(0,0);
+#end
     
 
     initSounds();
@@ -288,7 +300,8 @@ class Player extends FlxSprite
 
   private function updateMovement():Void
   {
-    if(!dashing){
+    if(!dashing)
+    {
       getKeys();
     }
 
@@ -307,16 +320,20 @@ class Player extends FlxSprite
     /**
      * Sounds
      */
-    if(!dashing && (_up || _down || _left || _right)){
+    if(!dashing && (_up || _down || _left || _right))
+    {
       foorstepsS.play();
-    }else{
+    }
+    else
+    {
       foorstepsS.stop();
     }
 
     /**
      * Position fixer
      */
-    if(!dashing){
+    if(!dashing)
+    {
       x = Math.round( x );
       y = Math.round( y );
     }
@@ -326,13 +343,61 @@ class Player extends FlxSprite
 
   private function getKeys():Void
   {
+#if mobile
+    _touches = FlxG.touches.list;
+    _up = false;
+    _down = false;
+    _left = false;
+    _right = false;
+    _A = false;
+
+    for(t in _touches)
+    {
+      // Dash
+      if(t.screenX > Std.int(FlxG.width/2))
+      {
+        _A = true;
+      }
+      else
+      {
+        // check for anything else
+        _touchPoint.x = t.screenX;
+        _touchPoint.y = t.screenY;
+
+        // not too far from the DPAD
+        if( _touchPoint.distanceTo(_dpadPoint) < 60 && _touchPoint.distanceTo(_dpadPoint) > 20 )
+        {
+          _touchAngle = FlxAngle.getAngle(_dpadPoint, _touchPoint);
+          
+          // 45 deg + 22.5 deg so we can walk diagonally
+          if( _touchAngle > -67.5 && _touchAngle < 67.5 )
+          {
+            _up = true;
+          }
+          if( _touchAngle > 22.5 && _touchAngle < 157.5 )
+          {
+            _right = true;
+          }
+          if( _touchAngle < -22.5 && _touchAngle > -157.5 )
+          {
+            _left = true;
+          }
+          if( Math.abs(_touchAngle) > 112.5 )
+          {
+            _down = true;
+          }
+        }
+      }
+    }
+#else
     _up = FlxG.keys.anyPressed(["UP", "W"]);
     _down = FlxG.keys.anyPressed(["DOWN", "S"]);
     _left = FlxG.keys.anyPressed(["LEFT", "A"]);
     _right = FlxG.keys.anyPressed(["RIGHT", "D"]);
 
     _A = FlxG.keys.anyPressed(["X", "NUMPADFOUR"]);
-    _B = FlxG.keys.anyPressed(["Z", "NUMPADFIVE"]);
+    // _B = FlxG.keys.anyPressed(["Z", "NUMPADFIVE"]);
+#end
   }
 
   /**
