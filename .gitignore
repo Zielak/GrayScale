@@ -1,0 +1,27 @@
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# Windows
+Thumbs.db
+
+# Vim
+.*.sw[a-z]
+*.un~i
+tags
+
+# OsX
+.DS_Store
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Haxe
+export
+zielak.private
+
+# SFX
+assets/music
+assets/sounds
+
