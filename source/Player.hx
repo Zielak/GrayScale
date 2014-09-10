@@ -365,7 +365,7 @@ class Player extends FlxSprite
         _touchPoint.y = t.screenY;
 
         // not too far from the DPAD
-        if( _touchPoint.distanceTo(_dpadPoint) < 60 && _touchPoint.distanceTo(_dpadPoint) > 20 )
+        if( _touchPoint.distanceTo(_dpadPoint) < 40 && _touchPoint.distanceTo(_dpadPoint) > 2 )
         {
           _touchAngle = FlxAngle.getAngle(_dpadPoint, _touchPoint);
           
