@@ -41,7 +41,7 @@
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1</walls>
   <entities>
     <player id="0" x="777" y="233" />
-    <ECruncher id="4" x="432" y="320" />
+    <ESpectre id="4" x="432" y="320" />
     <coin id="6" x="768" y="112" />
     <coin id="8" x="608" y="80" />
     <coin id="9" x="736" y="448" />
@@ -50,20 +50,20 @@
     <boulder id="12" x="672" y="313" />
     <boulder id="14" x="696" y="306" />
     <coin id="15" x="696" y="367" />
-    <ESpectre id="16" x="768" y="560" />
-    <ESpectre id="17" x="608" y="512" />
+    <ECruncher id="16" x="768" y="560" />
+    <ECruncher id="17" x="608" y="512" />
     <coin id="20" x="320" y="208" />
     <coin id="21" x="320" y="256" />
     <coin id="22" x="440" y="232" />
     <coin id="23" x="199" y="232" />
     <coin id="5" x="320" y="368" />
-    <ECruncher id="24" x="160" y="144" />
+    <ESpectre id="24" x="160" y="144" />
     <coin id="26" x="320" y="96" />
     <coin id="27" x="416" y="464" />
-    <ESpectre id="29" x="208" y="496" />
-    <ECruncher id="30" x="352" y="496" />
-    <ESpectre id="31" x="496" y="128" />
+    <ECruncher id="29" x="208" y="496" />
+    <ESpectre id="30" x="352" y="496" />
+    <ECruncher id="31" x="496" y="128" />
     <coin id="32" x="176" y="432" />
-    <ECruncher id="1" x="592" y="240" />
+    <ESpectre id="1" x="592" y="240" />
   </entities>
 </level>

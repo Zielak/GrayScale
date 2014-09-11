@@ -25,11 +25,11 @@ class ScoreManager
   public function addPointsFor(str:String):Void
   {
     switch(str){
-      case "spectre":   // ghost - Gray Cruncher
+      case "cruncher":   // ghost - Gray Cruncher
         _score += 150;
-      case "cruncher":  // spy - Tile Spectre
+      case "spectre":    // spy - Tile Spectre
         _score += 200;
-      case "cruncherVoid":
+      case "spectreVoid":
         _score += 350;
       case "coin":
         _score += 100;

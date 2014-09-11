@@ -82,10 +82,10 @@
     <coin id="17" x="408" y="712" />
     <coin id="18" x="471" y="711" />
     <coin id="19" x="535" y="711" />
-    <ESpectre id="20" x="352" y="688" />
-    <ESpectre id="23" x="528" y="656" />
-    <ECruncher id="25" x="496" y="720" />
-    <ECruncher id="27" x="128" y="320" />
+    <ECruncher id="20" x="352" y="688" />
+    <ECruncher id="23" x="528" y="656" />
+    <ESpectre id="25" x="496" y="720" />
+    <ESpectre id="27" x="128" y="320" />
     <coin id="29" x="144" y="224" />
     <boulder id="30" x="112" y="832" />
     <boulder id="31" x="144" y="864" />
@@ -97,17 +97,17 @@
     <coin id="37" x="167" y="694" />
     <coin id="38" x="208" y="896" />
     <coin id="39" x="375" y="850" />
-    <ESpectre id="41" x="192" y="960" />
-    <ESpectre id="42" x="48" y="768" />
-    <ESpectre id="45" x="672" y="400" />
+    <ECruncher id="41" x="192" y="960" />
+    <ECruncher id="42" x="48" y="768" />
+    <ECruncher id="45" x="672" y="400" />
     <coin id="46" x="496" y="352" />
     <coin id="47" x="662" y="407" />
     <boulder id="48" x="106" y="734" />
     <coin id="49" x="416" y="224" />
     <coin id="50" x="496" y="152" />
     <boulder id="52" x="543" y="196" />
-    <ESpectre id="54" x="352" y="544" />
-    <ESpectre id="55" x="240" y="368" />
+    <ECruncher id="54" x="352" y="544" />
+    <ECruncher id="55" x="240" y="368" />
     <coin id="57" x="336" y="464" />
     <coin id="59" x="608" y="240" />
     <boulder id="22" x="232" y="690" />

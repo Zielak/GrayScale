@@ -9,9 +9,9 @@ import flash.display.BitmapData;
 using flixel.util.FlxSpriteUtil;
 
 
-@:bitmap("assets/images/projectileC.png") class ProjectileCbmp extends BitmapData {}
+@:bitmap("assets/images/spectreProjectile.png") class SpectreProjectilebmp extends BitmapData {}
 
-class ProjectileC extends FlxSprite
+class SpectreProjectile extends FlxSprite
 {
 
   private var _lifeTime:Float = 0.25;
@@ -23,8 +23,7 @@ class ProjectileC extends FlxSprite
     Y = Math.round( Y );
     super(X,Y);
 
-    // loadGraphic(AssetPaths.projectilec__png, true, 16, 16);
-    loadGraphic(ProjectileCbmp, true, 16, 16);
+    loadGraphic(SpectreProjectilebmp, true, 16, 16);
 
     animation.add("idle", [0, 1, 2, 3], 1, false);
 

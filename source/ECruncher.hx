@@ -3,7 +3,6 @@ package ;
 
 import flash.display.BitmapData;
 import flash.media.Sound;
-
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -11,102 +10,86 @@ import flixel.system.FlxSound;
 import flixel.util.FlxAngle;
 import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
-import flixel.util.FlxMath;
 
+using flixel.util.FlxSpriteUtil;
 
 enum CruncherMind{
   Deciding;
   Searching;
-  Hiding;
-  Appearing;
-  Armed;
+  Flying;
   Attacking;
   Dying;
 }
 
-
 @:bitmap("assets/images/cruncher.png") class ECruncherbmp extends BitmapData {}
 
 #if flash
-@:sound("assets/sounds/sfx_cruncher_appear.mp3") class CruncherSappear extends Sound {}
+@:sound("assets/sounds/sfx_cruncher_alert.mp3") class CruncherSalert extends Sound {}
 @:sound("assets/sounds/sfx_cruncher_attack.mp3") class CruncherSattack extends Sound {}
-@:sound("assets/sounds/sfx_cruncher_charge.mp3") class CruncherScharge extends Sound {}
 @:sound("assets/sounds/sfx_cruncher_death.mp3") class CruncherSdeath extends Sound {}
-@:sound("assets/sounds/sfx_cruncher_disappear.mp3") class CruncherSdisappear extends Sound {}
 #else
-@:sound("assets/sounds/sfx_cruncher_appear.ogg") class CruncherSappear extends Sound {}
+@:sound("assets/sounds/sfx_cruncher_alert.ogg") class CruncherSalert extends Sound {}
 @:sound("assets/sounds/sfx_cruncher_attack.ogg") class CruncherSattack extends Sound {}
-@:sound("assets/sounds/sfx_cruncher_charge.ogg") class CruncherScharge extends Sound {}
 @:sound("assets/sounds/sfx_cruncher_death.ogg") class CruncherSdeath extends Sound {}
-@:sound("assets/sounds/sfx_cruncher_disappear.ogg") class CruncherSdisappear extends Sound {}
 #end
-
 
 class ECruncher extends FlxSprite
 {
-
-  private var appearS:FlxSound;
+  private var alertS:FlxSound;
   private var attackS:FlxSound;
-  private var chargeS:FlxSound;
   private var deathS:FlxSound;
-  private var disappearS:FlxSound;
 
   private function initSounds():Void
   {
-    appearS = new FlxSound();
-    appearS.loadEmbedded(CruncherSappear);
+    alertS = new FlxSound();
+    alertS.loadEmbedded(CruncherSalert);
 
     attackS = new FlxSound();
     attackS.loadEmbedded(CruncherSattack);
 
-    chargeS = new FlxSound();
-    chargeS.loadEmbedded(CruncherScharge);
-
     deathS = new FlxSound();
     deathS.loadEmbedded(CruncherSdeath);
-
-    disappearS = new FlxSound();
-    disappearS.loadEmbedded(CruncherSdisappear);
   }
   private function setVolumeByDistance(distance:Float):Void
   {
     if(distance > _viewDistance) return;
-    var vol:Float = -(distance / (_viewDistance*1.5) ) + 1;
+    var vol:Float = -(distance / _viewDistance) + 1;
 
     // trace("dist:   "+distance);
     // trace("volume: "+vol);
-    chargeS.volume = vol * 0.4;
-    appearS.volume =  disappearS.volume = vol;
-    deathS.volume = vol * 1.7;
-    attackS.volume = vol * 1.5;
+
+    alertS.volume = vol*0.8;
   }
+
+
 
   private var _targetPos:FlxPoint = new FlxPoint();
   private var _targetAngle:Float = 0;
-  private var _targetDirection:Int = 0x0000;
   private var _inRange:Bool = false;
-  
-  private var _state:EnumValue = Deciding;
-  private var _searchingTime:Float = 0.7;
-  private var _hidingTime:Float = 0.85;
-  private var _appearingTime:Float = 0.5;
-  private var _attackingTime:Float = 1;
-  // private var _dyingTime:Float = 2.2;
 
-  private var _shotMade:Bool = false;
+  private var _state:EnumValue = Deciding;
+  private var _searchingTime:Float = 0.75;
+  private var _flyingTime:Float = 1.35;
+  private var _attackingTime:Float = 0.28;
 
   private var _currentTime:Float = 0;
 
   private var _elapsed:Float;
 
 
+  private var _dyingTime:Float = 2.2;
+  private var _flickering:Bool = false;
+
+
   private var _viewDistance:Int = 100;
-  private var _armDistance:Int = 50;
-  private var _attackDistance:Int = 32;
+  private var _attackDistance:Int = 40;
 
-  // Randomize movement, 1,2,3
-  private var _moveBy:Int = 16;
 
+
+  
+  public var _flySpeed:Float = 36;
+  public var _attackSpeed:Float = 150;
+  public var speed:Float = 36;  
 
   public function new(X:Float=0, Y:Float=0)
   {
@@ -114,25 +97,26 @@ class ECruncher extends FlxSprite
 
     loadGraphic(ECruncherbmp, true, 16, 16);
 
-    animation.add("appear", [0, 1, 2, 3, 4], 20, false);
-    animation.add("hide",  [4, 3, 2, 1, 0], 20, false);
-    animation.add("armed",  [5], 1, false);
-    animation.add("attack",  [6, 7], 30, true);
+    var _fps:Int = FlxRandom.intRanged(3, 8);
+    animation.add("flying", [0, 1], _fps, true);
+    animation.add("attack", [2], 1, false);
+    animation.add("death",  [3, 4], 15, true);
 
-    animation.play("appear");
+    animation.play("flying");
+    
+    // setFacingFlip(FlxObject.RIGHT | FlxObject.DOWN, true, false);
 
-    x = Math.round(x);
-    y = Math.round(y);
+    drag.x = drag.y = 600;
+
+    setSize(10, 10);
+    offset.set(3, 3);
 
     initSounds();
-
-    startSearching();
   }
 
 
-  /**
-   * Update, where everything happens
-   */
+
+
   override public function update():Void
   {
     _elapsed = FlxG.elapsed;
@@ -141,174 +125,95 @@ class ECruncher extends FlxSprite
     if(alive)
     {
       switch (_state) {
-        case Searching:
-          lookForPlayer();
-        case Armed:
-          lookForPlayer();
+        case Deciding:
+          startSearching();
+        case Flying:
+          flyToPlayer();
+        case Attacking:
+          attackPlayer();
       }
       updateCooldowns();
     }
+
+
+    setVolumeByDistance(getGraphicMidpoint().distanceTo(_targetPos));
+
+
+    // Are we dying?
+    if(!alive && exists)
+    {
+      _dyingTime -= _elapsed;
+      if(_dyingTime <= 0)
+      {
+        death();
+      }else if( _dyingTime < 1 && !_flickering){
+        _flickering = true;
+        flicker(3, 0.05);
+      }
+    }
+
     super.update();
   }
 
+
+
   private function updateCooldowns():Void
   {
-    _currentTime -= _elapsed;
+    _currentTime -=_elapsed;
+    // trace('curTime: '+_currentTime);
+    // trace('elapsed: '+_elapsed);
 
-    // Change state when finished
     if(_currentTime <= 0){
+      // trace('current time = '+_currentTime+' and switching action');
       switch (_state) {
         case Searching:
           fetchTargetPosition();
-          startHiding();
-        case Hiding:
-          moveToNextTile();
-        case Appearing:
+          startFlying();
+        case Flying:
           startSearching();
         case Attacking:
           startSearching();
       }
     }
-    // Delayed attacking
-    if(_state == Attacking && _currentTime <= _attackingTime*0.8){
-      shoot();
-    }
   }
 
-  /**
-   * Start searching for the player
-   */
+
+
   private function startSearching():Void
   {
-    _currentTime = _searchingTime;
+    _currentTime = _searchingTime + FlxRandom.floatRanged(-0.03, 0.03);
     _state = Searching;
-    _shotMade = false;
+    speed = 0;
+
+    animation.play("flying");
   }
 
-  private function startHiding():Void
+  private function startFlying():Void
   {
     if(getGraphicMidpoint().distanceTo(_targetPos) > _viewDistance){
-      // I can't see him anymore, just stay idle.
       startSearching();
       return;
     }
-    // on my way!
-    animation.play("hide");
-    _currentTime = _hidingTime;
-    _state = Hiding;
-    // disappearS.play(true);
-  }
 
-  private function startAppearing():Void
-  {
-    // trace("Start Appearing");
-    _currentTime = _appearingTime;
-    _state = Appearing;
-    animation.play("appear");
-    appearS.play(true);
-  }
+    _currentTime = _flyingTime;
+    _state = Flying;
 
-  private function startArming():Void
-  {
-    // trace("Start Arming!");
-    _state = Armed;
-    animation.play("armed");
-    chargeS.play(true);
-  }
-
-  private function moveToNextTile():Void
-  {
-    // trace("Move to next tile");
-    // Move to next available tile
-
-    _moveBy = FlxRandom.intRanged(1,2);
-
-    switch(_targetDirection){
-      case FlxObject.UP:
-        y -= 16*_moveBy;
-      case FlxObject.DOWN:
-        y += 16*_moveBy;
-      case FlxObject.LEFT:
-        x -= 16*_moveBy;
-      case FlxObject.RIGHT:
-        x += 16*_moveBy;
-    }
-
-    startAppearing();
-  }
-  /**
-   * Cruncher just spedded into the wall or something, he must get back
-   */
-  public function stepBack():Void
-  {
-    switch(_targetDirection){
-      case FlxObject.UP:
-        y += 16*_moveBy;
-      case FlxObject.DOWN:
-        y -= 16*_moveBy;
-      case FlxObject.LEFT:
-        x += 16*_moveBy;
-      case FlxObject.RIGHT:
-        x -= 16*_moveBy;
-    }
-    startAppearing();
-  }
-
-  private function lookForPlayer():Void
-  {
-    fetchTargetPosition();
-    if(getGraphicMidpoint().distanceTo(_targetPos) < _armDistance)
-    {
-      // hold, hooold
-      if(_state != Armed) startArming();
-
-      if(getGraphicMidpoint().distanceTo(_targetPos) < _attackDistance)
-      {
-        // ATTACK!
-        if(_state != Attacking) startAttacking();
-      }
-    }else{
-      if(_state != Searching){
-        // reset state when player leaves _armDistance
-        startSearching();
-      }
-    }
+    speed = _flySpeed;
+    alertS.play();
   }
 
   private function startAttacking():Void
   {
-    // trace("Start Attacking!");
-    _state = Attacking;
-    animation.play("attack");
     _currentTime = _attackingTime;
+    _state = Attacking;
+
+    speed = _attackSpeed;
+
+    fetchTargetPosition();
+
+    animation.play("attack");
+    alertS.stop();
     attackS.play(true);
-  }
-
-  private function shoot():Void
-  {
-    if(!_shotMade)
-    {
-      _shotMade = true;
-      cast(FlxG.state, PlayState).flashHUD(10);
-
-      // Shoot!
-      var spr:ProjectileC;
-      var arr:Array<ProjectileC> = new Array<ProjectileC>();
-
-      spr = new ProjectileC(x, y, FlxObject.RIGHT);
-      arr.push(spr);
-
-      spr = new ProjectileC(x, y, FlxObject.LEFT);
-      arr.push(spr);
-
-      spr = new ProjectileC(x, y, FlxObject.UP);
-      arr.push(spr);
-
-      spr = new ProjectileC(x, y, FlxObject.DOWN);
-      arr.push(spr);
-
-      cast(FlxG.state, PlayState).addProjectiles(arr);
-    }
   }
 
 
@@ -320,45 +225,35 @@ class ECruncher extends FlxSprite
     _targetPos = cast(FlxG.state, PlayState).getPlayerPosition();
     _targetAngle = FlxAngle.angleBetweenPoint(this, _targetPos, true);
 
-    // Just 4 directions
-    if( FlxMath.inBounds(_targetAngle, -45, 45) ){
-      _targetDirection = FlxObject.RIGHT;
-    }else if( FlxMath.inBounds(_targetAngle, 45, 135) ){
-      _targetDirection = FlxObject.DOWN;
-    }else if( Math.abs(_targetAngle) > 135 ){
-      _targetDirection = FlxObject.LEFT;
-    }else{
-      _targetDirection = FlxObject.UP;
-    }
-
+    // Randomize a bit
+    _targetAngle += FlxRandom.floatRanged(-20, 20);
   }
+
+  private function flyToPlayer():Void
+  {
+    FlxAngle.rotatePoint(speed, 0, 0, 0, _targetAngle, velocity);
+
+    // fetchTargetPosition();
+    if(getGraphicMidpoint().distanceTo(_targetPos) < _attackDistance){
+      startAttacking();
+    }
+  }
+
+  private function attackPlayer():Void
+  {
+    FlxAngle.rotatePoint(speed, 0, 0, 0, _targetAngle, velocity);
+  }
+
 
 
   override public function kill():Void
   {
-    appearS.stop();
-    attackS.stop();
-    chargeS.stop();
-    disappearS.stop();
-    deathS.play();
-
     alive = false;
-
-    var puff:PlayerTrail;
-    puff = cast(FlxG.state, PlayState).puffSmoke(x,y);
-    puff.velocity.x = 6;
-    puff.velocity.y = -6;
-    puff = cast(FlxG.state, PlayState).puffSmoke(x,y);
-    puff.velocity.x = 6;
-    puff.velocity.y = 6;
-    puff = cast(FlxG.state, PlayState).puffSmoke(x,y);
-    puff.velocity.x = -6;
-    puff.velocity.y = 6;
-    puff = cast(FlxG.state, PlayState).puffSmoke(x,y);
-    puff.velocity.x = -6;
-    puff.velocity.y = -6;
-
+    animation.play("death");
+    deathS.play();
+  }
+  private function death():Void
+  {
     exists = false;
   }
-
 }

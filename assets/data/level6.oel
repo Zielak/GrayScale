@@ -56,25 +56,25 @@
     <coin id="4" x="488" y="407" />
     <player id="5" x="672" y="352" />
     <coin id="6" x="1040" y="384" />
-    <ESpectre id="7" x="1008" y="352" />
-    <ECruncher id="8" x="528" y="448" />
-    <ESpectre id="10" x="480" y="352" />
-    <ESpectre id="12" x="496" y="368" />
+    <ECruncher id="7" x="1008" y="352" />
+    <ESpectre id="8" x="528" y="448" />
+    <ECruncher id="10" x="480" y="352" />
+    <ECruncher id="12" x="496" y="368" />
     <coin id="14" x="928" y="192" />
-    <ECruncher id="15" x="736" y="368" />
-    <ESpectre id="16" x="608" y="304" />
-    <ECruncher id="19" x="784" y="624" />
-    <ECruncher id="20" x="832" y="256" />
+    <ESpectre id="15" x="736" y="368" />
+    <ECruncher id="16" x="608" y="304" />
+    <ESpectre id="19" x="784" y="624" />
+    <ESpectre id="20" x="832" y="256" />
     <coin id="21" x="832" y="144" />
     <coin id="22" x="304" y="688" />
     <coin id="23" x="304" y="544" />
     <coin id="24" x="256" y="464" />
     <coin id="26" x="256" y="528" />
-    <ESpectre id="27" x="320" y="480" />
-    <ESpectre id="28" x="160" y="496" />
+    <ECruncher id="27" x="320" y="480" />
+    <ECruncher id="28" x="160" y="496" />
     <coin id="29" x="208" y="183" />
     <coin id="30" x="104" y="352" />
-    <ESpectre id="36" x="48" y="256" />
+    <ECruncher id="36" x="48" y="256" />
     <coin id="18" x="672" y="208" />
     <coin id="37" x="448" y="144" />
     <coin id="38" x="576" y="624" />
@@ -95,15 +95,15 @@
     <boulder id="53" x="527" y="542" />
     <boulder id="54" x="517" y="515" />
     <boulder id="55" x="842" y="659" />
-    <ECruncher id="56" x="432" y="640" />
-    <ESpectre id="57" x="112" y="704" />
-    <ESpectre id="59" x="624" y="48" />
-    <ESpectre id="60" x="848" y="64" />
+    <ESpectre id="56" x="432" y="640" />
+    <ECruncher id="57" x="112" y="704" />
+    <ECruncher id="59" x="624" y="48" />
+    <ECruncher id="60" x="848" y="64" />
     <coin id="61" x="80" y="327" />
     <coin id="62" x="104" y="304" />
     <coin id="33" x="944" y="304" />
     <boulder id="63" x="944" y="240" />
-    <ESpectre id="0" x="496" y="544" />
-    <ECruncher id="11" x="336" y="336" />
+    <ECruncher id="0" x="496" y="544" />
+    <ESpectre id="11" x="336" y="336" />
   </entities>
 </level>

@@ -60,6 +60,10 @@ class HUDCoinMap extends FlxTypedGroup<FlxSprite>
     }
   }
 
+  /**
+   * Updates position of every point in the circle. 
+   * @param  arr<FlxSprite> Array of coins FlxSprite objects from the level
+   */
   public function updatePoints(arr:Array<FlxSprite>):Void
   {
     var sprite:FlxSprite;
@@ -81,6 +85,11 @@ class HUDCoinMap extends FlxTypedGroup<FlxSprite>
     }
   }
 
+  /**
+   * Target is our player, point of view to generate coin-pointers positions on the HUD
+   * @param  X target X position in the world
+   * @param  Y target Y position in the world
+   */
   public function updateTarget(X:Float, Y:Float):Void
   {
     _targetPoint.x = X;

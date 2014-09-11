@@ -31,10 +31,10 @@
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1</walls>
   <entities>
     <player id="0" x="320" y="144" />
-    <ECruncher id="1" x="160" y="320" />
-    <ECruncher id="2" x="320" y="240" />
-    <ECruncher id="3" x="496" y="256" />
-    <ECruncher id="4" x="432" y="320" />
+    <ESpectre id="1" x="160" y="320" />
+    <ESpectre id="2" x="320" y="240" />
+    <ESpectre id="3" x="496" y="256" />
+    <ESpectre id="4" x="432" y="320" />
     <coin id="5" x="80" y="144" />
   </entities>
 </level>

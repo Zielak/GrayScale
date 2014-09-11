@@ -37,12 +37,16 @@ class MenuState extends FlxState
 
   private var _timer:Float;
   private var _times:Dynamic = {
+#if debug
+// Fasten up credits just for testing
+    gbjam: 0,
+    darek: 0,
+    chris: 0
+#else
     gbjam: 1.5,
     darek: 2.5,
     chris: 2.5
-    // gbjam: 0,
-    // darek: 0,
-    // chris: 0
+#end
   };
 
   private var _currentScreen:String = "";
@@ -101,10 +105,7 @@ class MenuState extends FlxState
       showScreen("gameLogo", "hideLogo");
     }
 
-
-    // trace("achievements init()");
     Achievements.instance.initAchievements();
-    // trace("achievements init() done");
 
     super.create();
   }

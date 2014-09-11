@@ -62,8 +62,8 @@ class PlayState extends FlxState implements IPlayState
   private var _decoration = new FlxTypedGroup<FlxSprite>();
 
   private var _projectiles = new FlxTypedGroup<FlxSprite>();
-  private var _Espectres = new FlxTypedGroup<FlxSprite>();
   private var _Ecrunchers = new FlxTypedGroup<FlxSprite>();
+  private var _Espectres = new FlxTypedGroup<FlxSprite>();
 
   private var _bouncyWalls = new FlxTypedGroup<FlxSprite>();
 
@@ -113,10 +113,10 @@ class PlayState extends FlxState implements IPlayState
     add(_projectiles);
     add(_playerTrails);
     add(_coins);
-    add(_Ecrunchers);
+    add(_Espectres);
     add(_player);
     add(_decoration);
-    add(_Espectres);
+    add(_Ecrunchers);
 
     // FlxG.camera.follow(_player, FlxCamera.STYLE_LOCKON, 1);
     FlxG.camera.focusOn( new FlxPoint(_player.x, _player.y));
@@ -147,8 +147,8 @@ class PlayState extends FlxState implements IPlayState
 
 
     _projectiles = null;
-    _Espectres = null;
     _Ecrunchers = null;
+    _Espectres = null;
 
     _bouncyWalls = null;
 
@@ -244,13 +244,13 @@ class PlayState extends FlxState implements IPlayState
     FlxG.collide(_player, _tileMap, playerCollidesTilemap);
     FlxG.overlap(_player, _coins, playerOverlapsCoin);
     FlxG.overlap(_player, _projectiles, playerOverlapsProjectile);
-    FlxG.overlap(_player, _Espectres, playerOverlapsSpectre);
     FlxG.overlap(_player, _Ecrunchers, playerOverlapsCruncher);
+    FlxG.overlap(_player, _Espectres, playerOverlapsSpectre);
 
-    FlxG.collide(_Espectres, null, ESpectresOverlapEachother);
+    FlxG.collide(_Ecrunchers, null, ECrunchersOverlapEachother);
 
-    FlxG.overlap(_Ecrunchers, null, ECrunchersOverlapEachother);
-    FlxG.collide(_Ecrunchers, _tileMap);
+    FlxG.overlap(_Espectres, null, ESpectresOverlapEachother);
+    FlxG.collide(_Espectres, _tileMap);
 
 
     // ============
@@ -323,16 +323,16 @@ class PlayState extends FlxState implements IPlayState
         _maxCoins ++;
       // }
     }
-    else if (entityName == "ESpectre")
-    {
-      var enemy = new ESpectre(x, y);
-      _Espectres.add(enemy);
-    }
     else if (entityName == "ECruncher")
     {
-      // if(_Ecrunchers.members.length <= 0){
-        var enemy = new ECruncher(x, y);
-        _Ecrunchers.add(enemy);
+      var enemy = new ECruncher(x, y);
+      _Ecrunchers.add(enemy);
+    }
+    else if (entityName == "ESpectre")
+    {
+      // if(_Espectres.members.length <= 0){
+        var enemy = new ESpectre(x, y);
+        _Espectres.add(enemy);
       // }
     }
     else if(entityName == "boulder")
@@ -496,7 +496,7 @@ class PlayState extends FlxState implements IPlayState
     {
       if(cast(P, ECruncher).alive){
         cast(P, ECruncher).kill();
-        ScoreManager.instance.addPointsFor("cruncherVoid");
+        ScoreManager.instance.addPointsFor("spectreVoid");
       }
     }
     
@@ -554,13 +554,13 @@ class PlayState extends FlxState implements IPlayState
       FlxObject.separate(P,C);
     }
   }
-  private function playerOverlapsSpectre(P:FlxObject, E:FlxObject):Void
+  private function playerOverlapsCruncher(P:FlxObject, E:FlxObject):Void
   {
     if(_player.dashing){
       // Kill it! Points!
       if(E.alive){
         E.kill();
-        ScoreManager.instance.addPointsFor("spectre");
+        ScoreManager.instance.addPointsFor("cruncher");
         FlxG.camera.shake(0.02, 0.2);
       }
     }else{
@@ -570,7 +570,7 @@ class PlayState extends FlxState implements IPlayState
       }
     }
   }
-  private function playerOverlapsCruncher(P:FlxObject, E:FlxObject):Void
+  private function playerOverlapsSpectre(P:FlxObject, E:FlxObject):Void
   {
     /*if(_player.dashing){
       // Kill it! Points!
@@ -596,21 +596,22 @@ class PlayState extends FlxState implements IPlayState
     }
   }
 
-  private function ECrunchersOverlapEachother(A:FlxObject, B:FlxObject):Void
+  private function ESpectresOverlapEachother(A:FlxObject, B:FlxObject):Void
   {
     if(A.alive && B.alive){
-      // trace("Crunchers collide");
-      cast(A, ECruncher).stepBack();
+      // trace("Spectres collide");
+      cast(A, ESpectre).stepBack();
     }
   }
-  private function ECrunchersOverlapTilemap(C:FlxObject, T:FlxObject):Void
+  private function ESpectresOverlapTilemap(S:FlxObject, T:FlxObject):Void
   {
-    // trace("Cruncher collides wall");
+    // Didn't had time to do it well...
+    // trace("Spectres collides wall");
     // trace(T);
-    // cast(C, ECruncher).stepBack();
+    // cast(S, ESpectres).stepBack();
   }
 
-  private function ESpectresOverlapEachother(A:FlxObject, B:FlxObject):Void
+  private function ECrunchersOverlapEachother(A:FlxObject, B:FlxObject):Void
   {
     if(A.alive && B.alive){
       FlxObject.separate(A,B);

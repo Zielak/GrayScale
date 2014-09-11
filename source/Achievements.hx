@@ -5,6 +5,8 @@ import flixel.addons.api.FlxGameJolt;
 import flash.utils.ByteArray;
 
 #if flash
+// It's for quick testing the achievements on GameJolt.
+// Put up your own private API key file here!
 @:file("zielak.private") class MyKey extends ByteArray { }
 #end
 
@@ -179,9 +181,6 @@ class Achievements
 
       // trace("FlxGameJolt.init");
       FlxGameJolt.init(30964, keystring);
-
-      // FlxGameJolt.authUser("Zielak", "0471f3" );
-      // trace("FlxGameJolt.authUser");
       FlxGameJolt.authUser();
     }
 #end

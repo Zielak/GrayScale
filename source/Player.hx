@@ -72,9 +72,14 @@ class Player extends FlxSprite
    * Current speed, manipulated during play by eg. Dashing
    */
   public var speed:Float = 82;
+
   private var _speedLerp:Float = 0.72;
 
+  /**
+   * Maximum "waling" speed
+   */
   public var moveSpeed:Float = 80;
+
   private var _moveAngle:Float = 0;
 
   private var _deathCamTime:Float = 0.7;
@@ -83,7 +88,7 @@ class Player extends FlxSprite
   private var dash:Dynamic = {
     speed: 300,       // How fast you go while dashing
 
-    cooldown: 0,
+    cooldown: 0,      // Current cooldown of dashing
     time: 0.18,       // How long can you dash
     timeMore: 0.01,   // Added when you keep holding dash key
 
