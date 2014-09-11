@@ -25,7 +25,8 @@ Protip: before dashing remember to hold your diretion keys before hitting dash k
 
 # Credits
 
-Code, graphics - Darek Greenly [@zielakpl](https://twitter.com/zielakpl) 
+Code, graphics - Darek Greenly [@zielakpl](https://twitter.com/zielakpl)
+
 Sounds, music - Christopher Yabsley [@achebit](https://twitter.com/achebit)
 
 # Trivia
