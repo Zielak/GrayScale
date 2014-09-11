@@ -13,7 +13,7 @@ Dashing can be also used to SMASH any monsters who stand in your way. But be car
 ## Controls
 
 - Arrows or WASD - move your character around
-- [X] or [NUM_4] - while holding movement keys - dash nito gievn direction
+- "X" or "NUM_4" - while holding movement keys - dash nito gievn direction
 
 Protip: before dashing remember to hold your diretion keys before hitting dash key. It's easier to make diagonal dashes like that.
 
