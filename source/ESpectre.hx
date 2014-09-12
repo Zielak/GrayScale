@@ -45,40 +45,46 @@ enum SpectreMind{
 class ESpectre extends FlxSprite
 {
 
-  private var appearS:FlxSound;
-  private var attackS:FlxSound;
-  private var chargeS:FlxSound;
-  private var deathS:FlxSound;
-  private var disappearS:FlxSound;
+  private var _appearS:FlxSound;
+  private var _attackS:FlxSound;
+  private var _chargeS:FlxSound;
+  private var _deathS:FlxSound;
+  private var _disappearS:FlxSound;
 
   private function initSounds():Void
   {
-    appearS = new FlxSound();
-    appearS.loadEmbedded(SpectreSappear);
+    _appearS = new FlxSound();
+    _appearS.loadEmbedded(SpectreSappear);
 
-    attackS = new FlxSound();
-    attackS.loadEmbedded(SpectreSattack);
+    _attackS = new FlxSound();
+    _attackS.loadEmbedded(SpectreSattack);
 
-    chargeS = new FlxSound();
-    chargeS.loadEmbedded(SpectreScharge);
+    _chargeS = new FlxSound();
+    _chargeS.loadEmbedded(SpectreScharge);
 
-    deathS = new FlxSound();
-    deathS.loadEmbedded(SpectreSdeath);
+    _deathS = new FlxSound();
+    _deathS.loadEmbedded(SpectreSdeath);
 
-    disappearS = new FlxSound();
-    disappearS.loadEmbedded(SpectreSdisappear);
+    _disappearS = new FlxSound();
+    _disappearS.loadEmbedded(SpectreSdisappear);
   }
+
+  /**
+   * Change volume of this enemy based on the distance to player.
+   * TODO: move this to super class Enemy
+   */
   private function setVolumeByDistance(distance:Float):Void
   {
     if(distance > _viewDistance) return;
+    
     var vol:Float = -(distance / (_viewDistance*1.5) ) + 1;
 
     // trace("dist:   "+distance);
     // trace("volume: "+vol);
-    chargeS.volume = vol * 0.4;
-    appearS.volume =  disappearS.volume = vol;
-    deathS.volume = vol * 1.7;
-    attackS.volume = vol * 1.5;
+    _chargeS.volume = vol * 0.4;
+    _appearS.volume =  _disappearS.volume = vol;
+    _deathS.volume = vol * 1.7;
+    _attackS.volume = vol * 1.5;
   }
 
   private var _targetPos:FlxPoint = new FlxPoint();
@@ -196,7 +202,7 @@ class ESpectre extends FlxSprite
     animation.play("hide");
     _currentTime = _hidingTime;
     _state = Hiding;
-    // disappearS.play(true);
+    // _disappearS.play(true);
   }
 
   private function startAppearing():Void
@@ -205,7 +211,7 @@ class ESpectre extends FlxSprite
     _currentTime = _appearingTime;
     _state = Appearing;
     animation.play("appear");
-    appearS.play(true);
+    _appearS.play(true);
   }
 
   private function startArming():Void
@@ -213,7 +219,7 @@ class ESpectre extends FlxSprite
     // trace("Start Arming!");
     _state = Armed;
     animation.play("armed");
-    chargeS.play(true);
+    _chargeS.play(true);
   }
 
   private function moveToNextTile():Void
@@ -281,7 +287,7 @@ class ESpectre extends FlxSprite
     _state = Attacking;
     animation.play("attack");
     _currentTime = _attackingTime;
-    attackS.play(true);
+    _attackS.play(true);
   }
 
   private function shoot():Void
@@ -336,11 +342,11 @@ class ESpectre extends FlxSprite
 
   override public function kill():Void
   {
-    appearS.stop();
-    attackS.stop();
-    chargeS.stop();
-    disappearS.stop();
-    deathS.play();
+    _appearS.stop();
+    _attackS.stop();
+    _chargeS.stop();
+    _disappearS.stop();
+    _deathS.play();
 
     alive = false;
 

@@ -76,7 +76,7 @@ class Player extends FlxSprite
   private var _speedLerp:Float = 0.72;
 
   /**
-   * Maximum "waling" speed
+   * Maximum "walking" speed
    */
   public var moveSpeed:Float = 80;
 
@@ -117,7 +117,8 @@ class Player extends FlxSprite
   public function get_direction():Int
   {
     var dir:Int = 0x0000;
-    switch (_moveAngle) {
+    switch (_moveAngle)
+    {
       case 90:
         dir = FlxObject.DOWN;
       case 45:
@@ -224,18 +225,21 @@ class Player extends FlxSprite
 
   override public function update():Void
   {
-    if(alive && !reviving){
+    if(alive && !reviving)
+    {
       updateTimers();
       updateMovement();
       updateSafeSpot();
       updateDashing();
       updateAchievements();
     }
-
+    
     if(!alive && !reviving)
     {
       _deathCamTime -= FlxG.elapsed;
-      if(_deathCamTime <= 0){
+
+      if(_deathCamTime <= 0)
+      {
         ScoreManager.instance.resetLevelScore();
         FlxG.switchState(new PlayState());
       }
@@ -253,7 +257,8 @@ class Player extends FlxSprite
     /**
      * Remember
      */
-    if(!dashing && !onVoid){
+    if(!dashing && !onVoid)
+    {
       _tmpPoint.x = x;
       _tmpPoint.y = y;
       // trace(" tmp point: "+_tmpPoint.toString());
@@ -277,10 +282,12 @@ class Player extends FlxSprite
     /**
      * Dashing cooldowns
      */
-    if(dash.cooldown > 0){
+    if(dash.cooldown > 0)
+    {
       dash.cooldown -= dash.regenCD*_elapsed;
     }
-    if(dash.cooldown < 0){
+    else if(dash.cooldown < 0)
+    {
       dash.cooldown = 0;
       canDash = true;
     }
@@ -289,15 +296,21 @@ class Player extends FlxSprite
   private function updateDashing():Void
   {
     // Keeps dashing speed until duration is over
-    if(dashing){
-      if(dash.timeLeft > 0){
+    if(dashing)
+    {
+      if(dash.timeLeft > 0)
+      {
         dash.timeLeft -= _elapsed;
-        if(dash.timeLeft <= 0 && _A && !dash.addedMoreTime){
+
+        if(dash.timeLeft <= 0 && _A && !dash.addedMoreTime)
+        {
           dash.timeLeft += dash.timeMore;
           dash.addedMoreTime = true;
           // trace("added more time for dash");
         }
-      }else{
+      }
+      else
+      {
         stopDashing();
       }
     }
@@ -346,6 +359,9 @@ class Player extends FlxSprite
 
   }
 
+  /**
+   * Update all input related variables
+   */
   private function getKeys():Void
   {
 #if mobile
@@ -407,17 +423,21 @@ class Player extends FlxSprite
 
   /**
    * Update movement, move forward even when dashing
-   * @return [description]
    */
   private function move():Void
   {
-    if(!dashing){
+    if(!dashing)
+    {
       if (_up && _down)
+      {
         _up = _down = false;
+      }
       if (_left && _right)
+      {
         _left = _right = false;
+      }
 
-      if ( _up || _down || _left || _right)
+      if (_up || _down || _left || _right)
       {
 
         if (_up)
@@ -443,26 +463,29 @@ class Player extends FlxSprite
 
         FlxAngle.rotatePoint(speed, 0, 0, 0, _moveAngle, velocity);
       }
-    }else{
-      // if(dash.bounceCount<30){
-      //   What?
-      // }
+    }
+    else
+    {
       FlxAngle.rotatePoint(speed, 0, 0, 0, _moveAngle, velocity);
     }
   }
 
   private function updateAnimation():Void
   {
-    if(dashing){
+    if(dashing)
+    {
       animation.play("dash");
-    }else{
+    }
+    else
+    {
       if(velocity.x == 0 && velocity.y == 0)
       {
         animation.play("idle");
       }
       else
       {
-        switch (_moveAngle) {
+        switch (_moveAngle)
+        {
           case 90:
             animation.play("d");
           case 45:
@@ -500,6 +523,8 @@ class Player extends FlxSprite
     cast(FlxG.state, PlayState).flashHUD();
     FlxG.camera.shake(0.01, 0.1);
   }
+
+
   private function stopDashing():Void
   {
     speed = moveSpeed;
@@ -513,48 +538,6 @@ class Player extends FlxSprite
     dashLog = new Array<FlxPoint>();
   }
 
-  private function resetDashingTimer(?alsoAdd:Float = 0):Void
-  {
-    dash.timeLeft = dash.time + alsoAdd;
-    // cast(FlxG.state, PlayState).flashHUD();
-    dash.bounceCount ++;
-    dashLog.push(new FlxPoint(x,y));
-
-    // Check for repetition, prevent looping
-    var repetition:Int = 0; // Stability?
-    var A:FlxPoint;
-    var B:FlxPoint;
-
-    if(dash.bounceCount > 10){
-      for(i in 0...dashLog.length)
-      {
-        A = dashLog[i];
-        A.x = Math.round(A.x);
-        A.y = Math.round(A.y);
-        for(j in 0...dashLog.length)
-        {
-          B = dashLog[j];
-          B.x = Math.round(B.x);
-          B.y = Math.round(B.y);
-
-          // trace("A: ["+A.x+", "+A.y+"]" );
-          // trace("B: ["+B.x+", "+B.y+"]" );
-          if(A.x == B.x && A.y == B.y){
-            repetition ++;
-            // trace(" ["+i+", "+ j+"]  A & B Are equal");
-          }
-
-          // trace("------------" );
-        }
-      }
-    }
-    if(repetition >= dash.bounceCount*2){
-      // just in case, lower probability of stucking by 3 lol
-      stopDashing();
-    }
-    // trace("Repetition: "+repetition);
-    // trace("Bounce Count: "+dash.bounceCount);
-  }
 
 
   /**
@@ -574,6 +557,61 @@ class Player extends FlxSprite
     {
       bounceS.play(true);
     }
+  }
+
+
+  /**
+   * Make player dasha little longer. Called when bouncing off Energy walls.
+   * Also prevents from getting stuck in dash loop (eg. stuck between 2 energy walls). Keeps a log of every last bounce position and checks for repetition. 
+   * Breaks dashing state when repetition rate is too high.
+   * *fabolous!*
+   * @param  ?alsoAdd [description]
+   * @return          [description]
+   */
+  private function resetDashingTimer(?alsoAdd:Float = 0):Void
+  {
+    dash.timeLeft = dash.time + alsoAdd;
+    dash.bounceCount ++;
+    dashLog.push(new FlxPoint(x,y));
+
+    // Check for repetition, prevent looping
+    var repetition:Int = 0; // Stability?
+    var A:FlxPoint;
+    var B:FlxPoint;
+
+    // Only check for repetition after a while
+    if(dash.bounceCount > 10)
+    {
+      for(i in 0...dashLog.length)
+      {
+        A = dashLog[i];
+        A.x = Math.round(A.x);
+        A.y = Math.round(A.y);
+        for(j in 0...dashLog.length)
+        {
+          B = dashLog[j];
+          B.x = Math.round(B.x);
+          B.y = Math.round(B.y);
+
+          // trace("A: ["+A.x+", "+A.y+"]" );
+          // trace("B: ["+B.x+", "+B.y+"]" );
+          if(A.x == B.x && A.y == B.y)
+          {
+            repetition ++;
+            // trace(" ["+i+", "+ j+"]  A & B Are equal");
+          }
+
+          // trace("------------" );
+        }
+      }
+    }
+    if(repetition >= dash.bounceCount*2)
+    {
+      // just in case, lower probability of stucking by 3 lol
+      stopDashing();
+    }
+    // trace("Repetition: "+repetition);
+    // trace("Bounce Count: "+dash.bounceCount);
   }
 
   /**
@@ -601,11 +639,12 @@ class Player extends FlxSprite
 
 
   /**
-   * Fall back to last known safe position after entering the void
+   * Fall back to last known safe position after getting soft-killed
    */
   public function reviveAtSafeSpot():Void
   {
-    if(alive && !reviving){
+    if(alive && !reviving)
+    {
       // trace("Reviving");
 
       alive = false;
@@ -621,10 +660,14 @@ class Player extends FlxSprite
 
       // x = safeSpot.x;
       // y = safeSpot.y;
-
     }
     
   }
+
+  /**
+   * Called after "reviving" animation is complete
+   * @param  tween I guess I had to put reference to the FlxTween object here.
+   */
   private function reviveComplete(tween:FlxTween):Void{
     x = safeSpot.x;
     y = safeSpot.y;

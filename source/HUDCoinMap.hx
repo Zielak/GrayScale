@@ -44,9 +44,12 @@ class HUDCoinMap extends FlxTypedGroup<FlxSprite>
         _angles[i] = FlxAngle.getAngle( _targetPoint , _points[i]) - 90;
         _distances[i] = _points[i].distanceTo(_targetPoint);
 
-        if(_distances[i] < _visibilityDistance){
+        if(_distances[i] < _visibilityDistance)
+        {
           members[i].visible = false;
-        }else{
+        }
+        else
+        {
           members[i].visible = true;
         }
       }

@@ -101,7 +101,8 @@ class HUD extends FlxTypedGroup<FlxSprite>
     // add(_txtHealth);
     // add(_txtMoney);
 
-    forEach(function(spr:FlxSprite) {
+    forEach(function(spr:FlxSprite)
+    {
       spr.scrollFactor.set();
     });
   }
@@ -114,8 +115,12 @@ class HUD extends FlxTypedGroup<FlxSprite>
     // _txtMoney.text = Std.string(Money);
     // _txtMoney.x = _sprMoney.x - _txtMoney.width - 4;
 
-    if(_flashDur > 0) _flashDur--;
-    if(_flashDur == 0 && _flash.visible){
+    if(_flashDur > 0)
+    {
+      _flashDur--;
+    }
+    else if(_flashDur == 0 && _flash.visible)
+    {
       _flash.visible = false;
     }
 

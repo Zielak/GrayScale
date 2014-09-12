@@ -6,6 +6,7 @@ import flixel.FlxG;
 class PlayList
 {
   private var _firstEntry:Bool;
+
   public var firstEntry(get, set):Bool;
   public function get_firstEntry():Bool{
     return _firstEntry;
@@ -27,6 +28,7 @@ class PlayList
   public function get_currentLevel():Int{
     return _currentLevel;
   }
+
   public var currentLevelName(get, null):String;
   public function get_currentLevelName():String{
     return _levelList[_currentLevel];
@@ -41,13 +43,21 @@ class PlayList
 
   private var _lastIntroLevel:Int;
 
-  public function nextLevel():Void{
+  /**
+   * Sets the next level to be loaded
+   */
+  public function nextLevel():Void
+  {
     _currentLevel++;
     if(_currentLevel >= _levelList.length){
       _currentLevel = 0;
     }
   }
 
+  /**
+   * Forces the i'th level to be loaded
+   * @param  i Index of level
+   */
   public function loadLevel(i:Int):Void
   {
     _currentLevel = i;

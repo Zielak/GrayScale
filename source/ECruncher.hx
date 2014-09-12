@@ -13,7 +13,8 @@ import flixel.util.FlxRandom;
 
 using flixel.util.FlxSpriteUtil;
 
-enum CruncherMind{
+enum CruncherMind
+{
   Deciding;
   Searching;
   Flying;
@@ -39,6 +40,7 @@ class ECruncher extends FlxSprite
   private var attackS:FlxSound;
   private var deathS:FlxSound;
 
+
   private function initSounds():Void
   {
     alertS = new FlxSound();
@@ -50,6 +52,10 @@ class ECruncher extends FlxSprite
     deathS = new FlxSound();
     deathS.loadEmbedded(CruncherSdeath);
   }
+  /**
+   * Change volume of this enemy based on the distance to player.
+   * TODO: move this to super class Enemy
+   */
   private function setVolumeByDistance(distance:Float):Void
   {
     if(distance > _viewDistance) return;
@@ -124,7 +130,8 @@ class ECruncher extends FlxSprite
     // what to do?
     if(alive)
     {
-      switch (_state) {
+      switch (_state)
+      {
         case Deciding:
           startSearching();
         case Flying:
@@ -135,7 +142,8 @@ class ECruncher extends FlxSprite
       updateCooldowns();
     }
 
-
+    // Not cool, should be refreshed only a moment before
+    // we want to play sound
     setVolumeByDistance(getGraphicMidpoint().distanceTo(_targetPos));
 
 

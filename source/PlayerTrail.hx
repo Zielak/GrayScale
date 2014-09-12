@@ -71,6 +71,8 @@ class PlayerTrail extends FlxSprite
     animation.play("death");
     flicker(3, 0.05);
   }
+
+  
   private function death():Void
   {
     exists = false;

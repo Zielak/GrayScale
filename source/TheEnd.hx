@@ -90,7 +90,6 @@ class TheEnd extends FlxState
 
   override function destroy():Void
   {
-    
     _music.stop();
     _music = null;
     _complete = null;

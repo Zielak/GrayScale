@@ -27,7 +27,6 @@ using flixel.util.FlxSpriteUtil;
 class LevelComplete extends FlxState
 {
 
-
   private var _music:FlxSound;
   private var _bam:FlxSound;
   private var _dash:FlxSound;
@@ -158,23 +157,30 @@ class LevelComplete extends FlxState
    */
   override public function update():Void
   {
-    if(_theTimer < 400){
+    if(_theTimer < 400)
+    {
       _theTimer++;
     }
 
-    if(_theTimer > 30 && !_dashed){
+    if(_theTimer > 30 && !_dashed)
+    {
       _dashed = true;
       _dash.play();
     }
-    if(_player.animation.curAnim.frameRate < 60){
+
+    if(_player.animation.curAnim.frameRate < 60)
+    {
       _player.animation.curAnim.frameRate += 1;
     }
-    if(_theTimer > 20 && _player.y > -20){
+
+    if(_theTimer > 20 && _player.y > -20)
+    {
       _playerYRate += 0.08;
       _player.y -= Std.int(_playerYRate);
     }
 
-    if(_theTimer > 45 && _whiteFace.y < 144){
+    if(_theTimer > 45 && _whiteFace.y < 144)
+    {
       _whiteFace.y += 10;
     }
 

@@ -45,12 +45,22 @@ class Coin extends FlxSprite
     animation.play("death");
     _deathCounter = FlxTween.num(0, 1, 3, null, deathTween);
   }
+
+  /**
+   * Helps animate disappereance of the coin. There are 3 phazes:
+   * 1. "death" animation from the sprite
+   * 2. add flickering effect of FlxSprite
+   * 3. remove
+   * @param  value current value of FlxTween
+   */
   private function deathTween(value:Float):Void
   {
-    if(value < 0.5){
+    if(value < 0.5)
+    {
       flicker(3, 0.05);
     }
-    if(value == 1){
+    if(value == 1)
+    {
       exists = false;
     }
   }
