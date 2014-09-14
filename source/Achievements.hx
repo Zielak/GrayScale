@@ -17,9 +17,11 @@ class Achievements
    * Complete whole game without dying from the void.
    */
   private var _diedFromVoid:Bool;
-  public function diedFromVoid():Void{
+  public function diedFromVoid():Void
+  {
     // trace("diedFromVoid");
-    if(!_diedFromVoid){
+    if(!_diedFromVoid)
+    {
       _diedFromVoid = false;
     }
   }
@@ -29,9 +31,11 @@ class Achievements
    * Complete whole game without dying from any monster.
    */
   private var _diedFromMonster:Bool;
-  public function diedFromMonster():Void{
+  public function diedFromMonster():Void
+  {
     // trace("diedFromMonster");
-    if(!_diedFromMonster){
+    if(!_diedFromMonster)
+    {
       _diedFromMonster = false;
     }
   }
@@ -41,11 +45,14 @@ class Achievements
    * Dash 10 times into the void and die. I'm sorry.
    */
   private var _shamelessDiver:Int;
-  public function shamelessDiver():Void{
+  public function shamelessDiver():Void
+  {
     // trace("shamelessDiver");
-    if(_shamelessDiver < 10){
+    if(_shamelessDiver < 10)
+    {
       _shamelessDiver ++;
-      if(_shamelessDiver >= 10){
+      if(_shamelessDiver >= 10)
+      {
 #if flash
         FlxGameJolt.addTrophy(10177);
 #end
@@ -58,11 +65,13 @@ class Achievements
    * Prolong your dash 30 times while bouncing off Energy walls during one game session.
    */
   private var _thisIsHowIBounce:Int;
-  public function thisIsHowIBounce():Void{
+  public function thisIsHowIBounce():Void
+  {
     // trace("thisIsHowIBounce");
     if(_thisIsHowIBounce < 30){
       _thisIsHowIBounce ++;
-      if(_thisIsHowIBounce >= 30){
+      if(_thisIsHowIBounce >= 30)
+      {
 #if flash
         FlxGameJolt.addTrophy(10180);
 #end
@@ -74,11 +83,14 @@ class Achievements
    * Accumulate 10 000 pixels while dashing, in one game-play session.
    */
   private var _spaceTimeTraveller:Int;
-  public function spaceTimeTraveller():Void{
+  public function spaceTimeTraveller():Void
+  {
     // trace("spaceTimeTraveller");
-    if(_spaceTimeTraveller < 10000){
+    if(_spaceTimeTraveller < 10000)
+    {
       _spaceTimeTraveller ++;
-      if(_spaceTimeTraveller >= 10000){
+      if(_spaceTimeTraveller >= 10000)
+      {
 #if flash
         FlxGameJolt.addTrophy(10174);
 #end
@@ -91,7 +103,8 @@ class Achievements
   /**
    * Finish game
    */
-  public function finishedGame():Void{
+  public function finishedGame():Void
+  {
 #if flash
     FlxGameJolt.addTrophy(10293);
 #end
@@ -127,13 +140,19 @@ class Achievements
    */
   public static var instance(get, null):Achievements;
   
-  public function new():Void {
-    if (false == canInstanciate) {
+
+
+
+  public function new():Void
+  {
+    if (false == canInstanciate)
+    {
       throw "Invalid Singleton access. Use Achievements.instance.";
     }
   }
 
-  private static function get_instance():Achievements {
+  private static function get_instance():Achievements
+  {
     if (null == instance) {
       // Set the flag to true, so the instance can be created.
       canInstanciate = true;
@@ -174,7 +193,8 @@ class Achievements
 
 #if flash
     // trace("check FlxGameJolt.initialized");
-    if(!FlxGameJolt.initialized){
+    if(!FlxGameJolt.initialized)
+    {
       // trace("FlxGameJolt.initialized = true");
       var bytearray = new MyKey(); // This will load your private key data as a ByteArray.
       var keystring = bytearray.readUTFBytes( bytearray.length ); // This converts the ByteArray to a string.
@@ -188,15 +208,15 @@ class Achievements
 
   public function sendGlobalTrophies():Void
   {
-    if(!_diedFromMonster){
-
+    if(!_diedFromMonster)
+    {
 #if flash
       FlxGameJolt.addTrophy(10281);
 #end
     }
 
-    if(!_diedFromVoid){
-
+    if(!_diedFromVoid)
+    {
 #if flash
       FlxGameJolt.addTrophy(10182);
 #end

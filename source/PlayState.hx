@@ -80,7 +80,8 @@ class PlayState extends FlxState implements IPlayState
   private var _music:FlxSound;
   public function resumeMusic():Void
   {
-    if(!_music.playing && !PlayList.instance.isLastLevel){
+    if(!_music.playing && !PlayList.instance.isLastLevel)
+    {
       _music.resume();
     }
   }
@@ -97,7 +98,9 @@ class PlayState extends FlxState implements IPlayState
 
     _music = new FlxSound();
     _music.loadEmbedded(MainThememp3, true);
-    if(!PlayList.instance.isLastLevel){
+
+    if(!PlayList.instance.isLastLevel)
+    {
       _music.play();
     }
 
@@ -105,7 +108,6 @@ class PlayState extends FlxState implements IPlayState
     setupMap();
 
     
-
     _hudCoinsMap = new HUDCoinMap();
     _hudCoinsMap.updatePoints(_coins.members);
     add(_hudCoinsMap);
@@ -176,13 +178,15 @@ class PlayState extends FlxState implements IPlayState
     _tileMap.setTileProperties(1+_flashTileOffset, NONE);
 
     // Walkable, first row
-    for(i in 2...16){
+    for(i in 2...16)
+    {
       _tileMap.setTileProperties(i, NONE);
       _tileMap.setTileProperties(i+_flashTileOffset, NONE);
     }
 
     // Walkable, pretty tiles
-    for(i in 27...32){
+    for(i in 27...32)
+    {
       _tileMap.setTileProperties(i, NONE);
       _tileMap.setTileProperties(i+_flashTileOffset, NONE);
 
@@ -194,12 +198,14 @@ class PlayState extends FlxState implements IPlayState
     }
 
     // Bouncy walls
-    for(i in 23...27){
+    for(i in 23...27)
+    {
       _tileMap.setTileProperties(i, ANY, bouncyCallback);
       _tileMap.setTileProperties(i+_flashTileOffset, ANY, bouncyCallback);
       _tileMap.setTileProperties(i+16, ANY, bouncyCallback);
       _tileMap.setTileProperties(i+16+_flashTileOffset, ANY, bouncyCallback);
     }
+
     // One-way tiles
     _tileMap.setTileProperties(54, UP|DOWN|LEFT);
     _tileMap.setTileProperties(54+_flashTileOffset, UP|DOWN|LEFT);
@@ -371,7 +377,8 @@ class PlayState extends FlxState implements IPlayState
       _flashDur--;
       // trace(_flashDur);
 
-      if(_flashDur <= 0){
+      if(_flashDur <= 0)
+      {
         flashOff();
       }
     }
@@ -386,14 +393,18 @@ class PlayState extends FlxState implements IPlayState
     {
       // Swap tiles!
       var tiles = _tileMap.getData();
-      for(i in 0...tiles.length){
+      for(i in 0...tiles.length)
+      {
         _tileMap.setTileByIndex(i, tiles[i] + _flashTileOffset);
       }
 
       _flashing = true;
       _flashDur = duration;
-    }else{
-      if(duration > _flashDur){
+    }
+    else
+    {
+      if(duration > _flashDur)
+      {
         _flashDur = duration;
       }
     }
@@ -405,7 +416,8 @@ class PlayState extends FlxState implements IPlayState
 
     var tiles = _tileMap.getData();
 
-    for(i in 0...tiles.length){
+    for(i in 0...tiles.length)
+    {
       _tileMap.setTileByIndex(i, tiles[i] - _flashTileOffset);
     }
   }
@@ -422,10 +434,18 @@ class PlayState extends FlxState implements IPlayState
    */
   private function playerCollidesTilemap(P:FlxObject, T:FlxObject):Void
   {
-    if(_player.dashing){
+    if(_player.dashing)
+    {
       _player.bounce(bounceSprite(_player, _player.direction));
     }
   }
+
+  /**
+   * Gets new direction for sprite based on current direction and which face of the tile it's touching
+   * @param  S   Sprite to be redirected
+   * @param  dir Current sprite's direction
+   * @return     New direction Enum, see FlxObject.DOWN etc
+   */
   private function bounceSprite(S:FlxSprite, dir:Int):Int
   {
     var DOWN = FlxObject.DOWN;
@@ -484,9 +504,11 @@ class PlayState extends FlxState implements IPlayState
     if(type == "Player")
     {
       _player.onVoid = true;
-      if(!_player.dashing && !_player.reviving){
-        // Faulty bnelow. Can jump between 4 tiles, right in the middle...
-        if(T.overlapsPoint( _player.getMidpoint())){
+      if(!_player.dashing && !_player.reviving)
+      {
+        // Faulty below. Can land between 4 void tiles, right in the middle...
+        if(T.overlapsPoint( _player.getMidpoint()))
+        {
           ScoreManager.instance.reducePointsFor("void");
           killPlayer(true);
         }
@@ -494,24 +516,30 @@ class PlayState extends FlxState implements IPlayState
     }
     else if(type == "ECruncher")
     {
-      if(cast(P, ECruncher).alive){
+      if(cast(P, ECruncher).alive)
+      {
         cast(P, ECruncher).kill();
         ScoreManager.instance.addPointsFor("spectreVoid");
       }
     }
     
   }
+
   /**
    * Player collides BouncyWall
    */
   private function bouncyCallback(T:FlxObject, P:FlxObject):Void
   {
-    if(_player.dashing){
+    if(_player.dashing)
+    {
       _player.bounce(bounceSprite(_player, _player.direction), true);
 
-      if(T.touching == FlxObject.LEFT || T.touching == FlxObject.RIGHT){
+      if(T.touching == FlxObject.LEFT || T.touching == FlxObject.RIGHT)
+      {
         FlxG.camera.shake(0.05, 0.13, null, true, FlxCamera.SHAKE_HORIZONTAL_ONLY);
-      }else{
+      }
+      else
+      {
         FlxG.camera.shake(0.05, 0.13, null, true, FlxCamera.SHAKE_VERTICAL_ONLY);
       }
       Achievements.instance.thisIsHowIBounce();
@@ -521,6 +549,7 @@ class PlayState extends FlxState implements IPlayState
       // add(ringBlink);
     }
   }
+
   /**
    * Player over Coin
    */
@@ -554,42 +583,54 @@ class PlayState extends FlxState implements IPlayState
       FlxObject.separate(P,C);
     }
   }
+
+
   private function playerOverlapsCruncher(P:FlxObject, E:FlxObject):Void
   {
-    if(_player.dashing){
+    if(_player.dashing)
+    {
       // Kill it! Points!
-      if(E.alive){
+      if(E.alive)
+      {
         E.kill();
         ScoreManager.instance.addPointsFor("cruncher");
         FlxG.camera.shake(0.02, 0.2);
       }
-    }else{
+    }
+    else
+    {
       if(E.alive && _player.alive){
         // Well, you're dead
         killPlayer();
       }
     }
   }
+
+
   private function playerOverlapsSpectre(P:FlxObject, E:FlxObject):Void
   {
-    /*if(_player.dashing){
-      // Kill it! Points!
-      if(E.alive){
-        E.kill();
-        ScoreManager.instance.addPointsFor("spectre");
-        FlxG.camera.shake(0.02, 0.2);
-      }
-    }else{
-      if(E.alive){
-        // Well, you're dead
-        _player.kill();
-      }
-    }*/
+    // Can do nothing to kill spectre right now... or can you?
+    // if(_player.dashing){
+    //   // Kill it! Points!
+    //   if(E.alive){
+    //     E.kill();
+    //     ScoreManager.instance.addPointsFor("spectre");
+    //     FlxG.camera.shake(0.02, 0.2);
+    //   }
+    // }else{
+    //   if(E.alive){
+    //     // Well, you're dead
+    //     _player.kill();
+    //   }
+    // }
   }
+
   private function playerOverlapsProjectile(P:FlxObject, E:FlxObject):Void
   {
-    if(!_player.dashing){
-      if(E.alive && _player.alive){
+    if(!_player.dashing)
+    {
+      if(E.alive && _player.alive)
+      {
         // Well, you're dead
         killPlayer();
       }
@@ -598,7 +639,8 @@ class PlayState extends FlxState implements IPlayState
 
   private function ESpectresOverlapEachother(A:FlxObject, B:FlxObject):Void
   {
-    if(A.alive && B.alive){
+    if(A.alive && B.alive)
+    {
       // trace("Spectres collide");
       cast(A, ESpectre).stepBack();
     }
@@ -613,7 +655,8 @@ class PlayState extends FlxState implements IPlayState
 
   private function ECrunchersOverlapEachother(A:FlxObject, B:FlxObject):Void
   {
-    if(A.alive && B.alive){
+    if(A.alive && B.alive)
+    {
       FlxObject.separate(A,B);
     }
   }
@@ -624,15 +667,19 @@ class PlayState extends FlxState implements IPlayState
 
   private function levelFinished():Void
   {
-    if(_music.playing){
+    if(_music.playing)
+    {
       // trace("stopping music");
       _music.stop();
     }
     // trace("is last level? "+PlayList.instance.isLastLevel);
-    if(!PlayList.instance.isLastLevel){
+    if(!PlayList.instance.isLastLevel)
+    {
       // trace("  nope");
       FlxG.switchState(new LevelComplete());
-    }else{
+    }
+    else
+    {
       // trace("  yep");
       FlxG.switchState(new TheEnd());
     }
@@ -640,21 +687,26 @@ class PlayState extends FlxState implements IPlayState
 
 
 
-  // where is that even used?
-  // HUDCoinMap is fed with player position, it doesn't uses this function
+  /**
+   * With this, enemies know where ther player is  in the world
+   * Used in their fetchTargetPosition()
+   * @return Player's position in world
+   */
   public function getPlayerPosition():FlxPoint
   {
     _playerPos.x = _player.x + 8;
     _playerPos.y = _player.y + 8;
     return _playerPos;
   }
+
   /**
    * Kill player and optionally revive him into last known safe position
    * @param  void if true, then player can go back to last known position
    */
   private function killPlayer(?void:Bool = false):Void
   {
-    if(void){
+    if(void)
+    {
       // trace("I'm trying to get you back at safe spot...");
       Achievements.instance.diedFromVoid();
       flashHUD(2);
@@ -663,12 +715,19 @@ class PlayState extends FlxState implements IPlayState
     }
     else
     {
+      // Man, you're done!
       _music.stop();
       Achievements.instance.diedFromMonster();
       _player.kill();
     }
   }
 
+  /**
+   * Adds puff one puff particle in the world. Used with player's dashing
+   * @param  ?X [description]
+   * @param  ?Y [description]
+   * @return    [description]
+   */
   public function puffSmoke(?X:Float = 0, ?Y:Float = 0):PlayerTrail
   {
     var newTrail = new PlayerTrail(X, Y);
@@ -676,10 +735,13 @@ class PlayState extends FlxState implements IPlayState
     return newTrail;
   }
 
+
   public function addProjectile(S:Dynamic):Void
   {
     _projectiles.add(cast(S, FlxSprite));
   }
+
+
   public function addProjectiles(A:Array<Dynamic>):Void
   {
     for(s in A)

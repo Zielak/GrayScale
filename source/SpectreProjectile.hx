@@ -27,7 +27,8 @@ class SpectreProjectile extends FlxSprite
 
     animation.add("idle", [0, 1, 2, 3], 1, false);
 
-    switch (D) {
+    switch (D)
+    {
       case 0x0001:  // LEFT
         animation.frameIndex = 3;
         velocity.x = -_speed;

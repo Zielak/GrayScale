@@ -93,17 +93,17 @@ class MenuState extends FlxState
     _gameLogo.visible = false;
     _fader.visible = true;
 
-    if(PlayList.instance.firstEntry){
+    // if(PlayList.instance.firstEntry){
       add(_gbjam);
       add(_darek);
       add(_chris);
       add(_gameLogo);
       add(_fader);
       showScreen("gbjam");
-    }else{
-      add(_gameLogo);
-      showScreen("gameLogo", "hideLogo");
-    }
+    // }else{
+    //   add(_gameLogo);
+    //   showScreen("gameLogo", "hideLogo");
+    // }
 
     Achievements.instance.initAchievements();
 
