@@ -1,8 +1,14 @@
 
-package ;
+package enemies;
 
 import flash.display.BitmapData;
 import flash.media.Sound;
+// #if flash
+// import flash.media.Sound;
+// #else
+// import openfl.media.Sound;
+// #end
+
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -22,7 +28,7 @@ enum CruncherMind
   Dying;
 }
 
-@:bitmap("assets/images/cruncher.png") class ECruncherbmp extends BitmapData {}
+@:bitmap("assets/images/cruncher.png") class Cruncherbmp extends BitmapData {}
 
 #if flash
 @:sound("assets/sounds/sfx_cruncher_alert.mp3") class CruncherSalert extends Sound {}
@@ -34,39 +40,25 @@ enum CruncherMind
 @:sound("assets/sounds/sfx_cruncher_death.ogg") class CruncherSdeath extends Sound {}
 #end
 
-class ECruncher extends FlxSprite
+class Cruncher extends Enemy
 {
-  private var alertS:FlxSound;
-  private var attackS:FlxSound;
-  private var deathS:FlxSound;
-
 
   private function initSounds():Void
   {
-    alertS = new FlxSound();
-    alertS.loadEmbedded(CruncherSalert);
+    var s:FlxSound;
 
-    attackS = new FlxSound();
-    attackS.loadEmbedded(CruncherSattack);
+    s = new FlxSound();
+    s.loadEmbedded(CruncherSalert);
+    addSound( "alert", s, 0.8 );
 
-    deathS = new FlxSound();
-    deathS.loadEmbedded(CruncherSdeath);
+    s = new FlxSound();
+    s.loadEmbedded(CruncherSattack);
+    addSound( "attack", s );
+
+    s = new FlxSound();
+    s.loadEmbedded(CruncherSdeath);
+    addSound( "death", s );
   }
-  /**
-   * Change volume of this enemy based on the distance to player.
-   * TODO: move this to super class Enemy
-   */
-  private function setVolumeByDistance(distance:Float):Void
-  {
-    if(distance > _viewDistance) return;
-    var vol:Float = -(distance / _viewDistance) + 1;
-
-    // trace("dist:   "+distance);
-    // trace("volume: "+vol);
-
-    alertS.volume = vol*0.8;
-  }
-
 
 
   private var _targetPos:FlxPoint = new FlxPoint();
@@ -87,7 +79,7 @@ class ECruncher extends FlxSprite
   private var _flickering:Bool = false;
 
 
-  private var _viewDistance:Int = 100;
+
   private var _attackDistance:Int = 40;
 
 
@@ -101,7 +93,7 @@ class ECruncher extends FlxSprite
   {
     super(X,Y);
 
-    loadGraphic(ECruncherbmp, true, 16, 16);
+    loadGraphic(Cruncherbmp, true, 16, 16);
 
     var _fps:Int = FlxRandom.intRanged(3, 8);
     animation.add("flying", [0, 1], _fps, true);
@@ -207,7 +199,7 @@ class ECruncher extends FlxSprite
     _state = Flying;
 
     speed = _flySpeed;
-    alertS.play();
+    playSound("alert");
   }
 
   private function startAttacking():Void
@@ -220,8 +212,8 @@ class ECruncher extends FlxSprite
     fetchTargetPosition();
 
     animation.play("attack");
-    alertS.stop();
-    attackS.play(true);
+    stopSound("alert");
+    playSound("attack");
   }
 
 
@@ -258,7 +250,7 @@ class ECruncher extends FlxSprite
   {
     alive = false;
     animation.play("death");
-    deathS.play();
+    playSound("death");
   }
   private function death():Void
   {

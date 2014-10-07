@@ -1,8 +1,13 @@
 
-package ;
+package enemies;
 
 import flash.display.BitmapData;
 import flash.media.Sound;
+// #if flash
+// import flash.media.Sound;
+// #else
+// import openfl.media.Sound;
+// #end
 
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -25,7 +30,7 @@ enum SpectreMind{
 }
 
 
-@:bitmap("assets/images/spectre.png") class ESpectrebmp extends BitmapData {}
+@:bitmap("assets/images/spectre.png") class Spectrebmp extends BitmapData {}
 
 #if flash
 @:sound("assets/sounds/sfx_spectre_appear.mp3") class SpectreSappear extends Sound {}
@@ -42,49 +47,33 @@ enum SpectreMind{
 #end
 
 
-class ESpectre extends FlxSprite
+class Spectre extends Enemy
 {
-
-  private var _appearS:FlxSound;
-  private var _attackS:FlxSound;
-  private var _chargeS:FlxSound;
-  private var _deathS:FlxSound;
-  private var _disappearS:FlxSound;
 
   private function initSounds():Void
   {
-    _appearS = new FlxSound();
-    _appearS.loadEmbedded(SpectreSappear);
+    var s:FlxSound;
 
-    _attackS = new FlxSound();
-    _attackS.loadEmbedded(SpectreSattack);
 
-    _chargeS = new FlxSound();
-    _chargeS.loadEmbedded(SpectreScharge);
+    s = new FlxSound();
+    s.loadEmbedded(SpectreSappear);
+    addSound("appear", s );
 
-    _deathS = new FlxSound();
-    _deathS.loadEmbedded(SpectreSdeath);
+    s = new FlxSound();
+    s.loadEmbedded(SpectreSattack);
+    addSound("attack", s, 1.5 );
 
-    _disappearS = new FlxSound();
-    _disappearS.loadEmbedded(SpectreSdisappear);
-  }
+    s = new FlxSound();
+    s.loadEmbedded(SpectreScharge);
+    addSound("charge", s, 0.4 );
 
-  /**
-   * Change volume of this enemy based on the distance to player.
-   * TODO: move this to super class Enemy
-   */
-  private function setVolumeByDistance(distance:Float):Void
-  {
-    if(distance > _viewDistance) return;
-    
-    var vol:Float = -(distance / (_viewDistance*1.5) ) + 1;
+    s = new FlxSound();
+    s.loadEmbedded(SpectreSdeath);
+    addSound("death", s, 1.7 );
 
-    // trace("dist:   "+distance);
-    // trace("volume: "+vol);
-    _chargeS.volume = vol * 0.4;
-    _appearS.volume =  _disappearS.volume = vol;
-    _deathS.volume = vol * 1.7;
-    _attackS.volume = vol * 1.5;
+    s = new FlxSound();
+    s.loadEmbedded(SpectreSdisappear);
+    addSound("disappear", s );
   }
 
   private var _targetPos:FlxPoint = new FlxPoint();
@@ -106,7 +95,6 @@ class ESpectre extends FlxSprite
   private var _elapsed:Float;
 
 
-  private var _viewDistance:Int = 100;
   private var _armDistance:Int = 50;
   private var _attackDistance:Int = 32;
 
@@ -114,11 +102,11 @@ class ESpectre extends FlxSprite
   private var _moveBy:Int = 16;
 
 
-  public function new(X:Float=0, Y:Float=0)
+  override public function new(X:Float=0, Y:Float=0)
   {
     super(X,Y);
 
-    loadGraphic(ESpectrebmp, true, 16, 16);
+    loadGraphic(Spectrebmp, true, 16, 16);
 
     animation.add("appear", [0, 1, 2, 3, 4], 20, false);
     animation.add("hide",  [4, 3, 2, 1, 0], 20, false);
@@ -211,7 +199,7 @@ class ESpectre extends FlxSprite
     _currentTime = _appearingTime;
     _state = Appearing;
     animation.play("appear");
-    _appearS.play(true);
+    playSound("appear");
   }
 
   private function startArming():Void
@@ -219,7 +207,7 @@ class ESpectre extends FlxSprite
     // trace("Start Arming!");
     _state = Armed;
     animation.play("armed");
-    _chargeS.play(true);
+    playSound("charge");
   }
 
   private function moveToNextTile():Void
@@ -287,7 +275,7 @@ class ESpectre extends FlxSprite
     _state = Attacking;
     animation.play("attack");
     _currentTime = _attackingTime;
-    _attackS.play(true);
+    playSound("attack");
   }
 
   private function shoot():Void
@@ -342,11 +330,11 @@ class ESpectre extends FlxSprite
 
   override public function kill():Void
   {
-    _appearS.stop();
-    _attackS.stop();
-    _chargeS.stop();
-    _disappearS.stop();
-    _deathS.play();
+    stopSound("appear");
+    stopSound("attack");
+    stopSound("charge");
+    stopSound("disappear");
+    playSound("death");
 
     alive = false;
 
