@@ -230,17 +230,18 @@ class PlayState extends FlxState implements IPlayState
     if(_player.reviving) return;
     // Change level for debuggin
 
-
-    // if(FlxG.keys.anyPressed(["ONE"])) PlayList.instance.loadLevel(0);
-    // if(FlxG.keys.anyPressed(["TWO"])) PlayList.instance.loadLevel(1);
-    // if(FlxG.keys.anyPressed(["THREE"])) PlayList.instance.loadLevel(2);
-    // if(FlxG.keys.anyPressed(["FOUR"])) PlayList.instance.loadLevel(3);
-    // if(FlxG.keys.anyPressed(["FIVE"])) PlayList.instance.loadLevel(4);
-    // if(FlxG.keys.anyPressed(["SIX"])) PlayList.instance.loadLevel(5);
-    // if(FlxG.keys.anyPressed(["SEVEN"])) PlayList.instance.loadLevel(6);
-    // if(FlxG.keys.anyPressed(["EIGHT"])) PlayList.instance.loadLevel(7);
-    // if(FlxG.keys.anyPressed(["NINE"])) PlayList.instance.loadLevel(8);
-    // if(FlxG.keys.anyPressed(["ONE","TWO","THREE","FOUR","FIVE","SIX","SEVEN","EIGHT","NINE"]) ) killPlayer();
+#if debug
+    if(FlxG.keys.anyPressed(["ONE"])) PlayList.instance.loadLevel(0);
+    if(FlxG.keys.anyPressed(["TWO"])) PlayList.instance.loadLevel(1);
+    if(FlxG.keys.anyPressed(["THREE"])) PlayList.instance.loadLevel(2);
+    if(FlxG.keys.anyPressed(["FOUR"])) PlayList.instance.loadLevel(3);
+    if(FlxG.keys.anyPressed(["FIVE"])) PlayList.instance.loadLevel(4);
+    if(FlxG.keys.anyPressed(["SIX"])) PlayList.instance.loadLevel(5);
+    if(FlxG.keys.anyPressed(["SEVEN"])) PlayList.instance.loadLevel(6);
+    if(FlxG.keys.anyPressed(["EIGHT"])) PlayList.instance.loadLevel(7);
+    if(FlxG.keys.anyPressed(["NINE"])) PlayList.instance.loadLevel(8);
+    if(FlxG.keys.anyPressed(["ONE","TWO","THREE","FOUR","FIVE","SIX","SEVEN","EIGHT","NINE"]) ) killPlayer();
+#end
 
     // ============
     // COLLISIONS
