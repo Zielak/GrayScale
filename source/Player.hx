@@ -686,7 +686,12 @@ class Player extends FlxSprite
   {
     deathS.play();
     alive = false;
+
+    #if debug
+    FlxG.timeScale = 1;
+    #else
     FlxG.timeScale = 0.2;
+    #end
 
     visible = false;
 
