@@ -20,8 +20,12 @@ class Enemy extends FlxSprite
 
 
 
+  private var _time:Dynamic<Float>;
+  private var _elapsed:Float;
+  private var _currentTime:Float = 0;
 
 
+  private var _state:EnumValue;
 
 
 
@@ -144,6 +148,7 @@ class Enemy extends FlxSprite
     _sounds = new Map<String, FlxSound>();
     _soundsVolumes = new Map<String, Float>();
 
+    _time = {};
   }
 
 }

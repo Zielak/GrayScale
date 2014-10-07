@@ -65,26 +65,9 @@ class Cruncher extends Enemy
   private var _targetAngle:Float = 0;
   private var _inRange:Bool = false;
 
-  private var _state:EnumValue = Deciding;
-  private var _searchingTime:Float = 0.75;
-  private var _flyingTime:Float = 1.35;
-  private var _attackingTime:Float = 0.28;
-
-  private var _currentTime:Float = 0;
-
-  private var _elapsed:Float;
-
-
-  private var _dyingTime:Float = 2.2;
   private var _flickering:Bool = false;
 
-
-
   private var _attackDistance:Int = 40;
-
-
-
-  
   public var _flySpeed:Float = 36;
   public var _attackSpeed:Float = 150;
   public var speed:Float = 36;  
@@ -93,6 +76,9 @@ class Cruncher extends Enemy
   {
     super(X,Y);
 
+    /**
+     * Graphics
+     */
     loadGraphic(Cruncherbmp, true, 16, 16);
 
     var _fps:Int = FlxRandom.intRanged(3, 8);
@@ -104,11 +90,24 @@ class Cruncher extends Enemy
     
     // setFacingFlip(FlxObject.RIGHT | FlxObject.DOWN, true, false);
 
+    /**
+     * Properties
+     */
     drag.x = drag.y = 600;
 
     setSize(10, 10);
     offset.set(3, 3);
 
+    _time.searching = 0.75;
+    _time.flying = 1.35;
+    _time.attacking = 0.28;
+    _time.dying = 2.2;
+
+    _state = Deciding;
+
+    /**
+     * Sounds
+     */
     initSounds();
   }
 
@@ -142,11 +141,11 @@ class Cruncher extends Enemy
     // Are we dying?
     if(!alive && exists)
     {
-      _dyingTime -= _elapsed;
-      if(_dyingTime <= 0)
+      _time.dying -= _elapsed;
+      if(_time.dying <= 0)
       {
         death();
-      }else if( _dyingTime < 1 && !_flickering){
+      }else if( _time.dying < 1 && !_flickering){
         _flickering = true;
         flicker(3, 0.05);
       }
@@ -181,7 +180,7 @@ class Cruncher extends Enemy
 
   private function startSearching():Void
   {
-    _currentTime = _searchingTime + FlxRandom.floatRanged(-0.03, 0.03);
+    _currentTime = _time.searching + FlxRandom.floatRanged(-0.03, 0.03);
     _state = Searching;
     speed = 0;
 
@@ -195,7 +194,7 @@ class Cruncher extends Enemy
       return;
     }
 
-    _currentTime = _flyingTime;
+    _currentTime = _time.flying;
     _state = Flying;
 
     speed = _flySpeed;
@@ -204,7 +203,7 @@ class Cruncher extends Enemy
 
   private function startAttacking():Void
   {
-    _currentTime = _attackingTime;
+    _currentTime = _time.attacking;
     _state = Attacking;
 
     speed = _attackSpeed;
