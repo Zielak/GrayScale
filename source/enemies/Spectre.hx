@@ -80,19 +80,9 @@ class Spectre extends Enemy
   private var _targetAngle:Float = 0;
   private var _targetDirection:Int = 0x0000;
   private var _inRange:Bool = false;
-  
-  private var _state:EnumValue = Deciding;
-  private var _searchingTime:Float = 0.7;
-  private var _hidingTime:Float = 0.85;
-  private var _appearingTime:Float = 0.5;
-  private var _attackingTime:Float = 1;
-  // private var _dyingTime:Float = 2.2;
 
   private var _shotMade:Bool = false;
 
-  private var _currentTime:Float = 0;
-
-  private var _elapsed:Float;
 
 
   private var _armDistance:Int = 50;
@@ -114,6 +104,13 @@ class Spectre extends Enemy
     animation.add("attack",  [6, 7], 30, true);
 
     animation.play("appear");
+
+
+    _time.searching = 0.7;
+    _time.hiding = 0.85;
+    _time.appearing = 0.5;
+    _time.attacking = 1;
+
 
     x = Math.round(x);
     y = Math.round(y);
@@ -164,7 +161,7 @@ class Spectre extends Enemy
       }
     }
     // Delayed attacking
-    if(_state == Attacking && _currentTime <= _attackingTime*0.8){
+    if(_state == Attacking && _currentTime <= _time.attacking*0.8){
       shoot();
     }
   }
@@ -174,7 +171,7 @@ class Spectre extends Enemy
    */
   private function startSearching():Void
   {
-    _currentTime = _searchingTime;
+    _currentTime = _time.searching;
     _state = Searching;
     _shotMade = false;
   }
@@ -188,7 +185,7 @@ class Spectre extends Enemy
     }
     // on my way!
     animation.play("hide");
-    _currentTime = _hidingTime;
+    _currentTime = _time.hiding;
     _state = Hiding;
     // _disappearS.play(true);
   }
@@ -196,7 +193,7 @@ class Spectre extends Enemy
   private function startAppearing():Void
   {
     // trace("Start Appearing");
-    _currentTime = _appearingTime;
+    _currentTime = _time.appearing;
     _state = Appearing;
     animation.play("appear");
     playSound("appear");
@@ -274,7 +271,7 @@ class Spectre extends Enemy
     // trace("Start Attacking!");
     _state = Attacking;
     animation.play("attack");
-    _currentTime = _attackingTime;
+    _currentTime = _time.attacking;
     playSound("attack");
   }
 

@@ -8,6 +8,9 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.input.touch.FlxTouch;
+import flixel.input.gamepad.FlxGamepad;
+import flixel.input.gamepad.XboxButtonID;
+import flixel.input.keyboard.FlxKeyboard;
 import flixel.system.FlxSound;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
@@ -162,7 +165,9 @@ class Player extends FlxSprite
   public var canDash:Bool = true;
 
 
-
+  private var _inputGamepad:Bool;
+  private var _gamepad:FlxGamepad;
+  private var _keyboard:FlxKeyboard;
   private var _up:Bool = false;
   private var _down:Bool = false;
   private var _left:Bool = false;
@@ -211,6 +216,8 @@ class Player extends FlxSprite
 
     safeSpot.x = X;
     safeSpot.x = Y;
+
+    _inputGamepad = false;
 
 #if mobile
     _dpadPoint = new FlxPoint( 0, Std.int(FlxG.height/4*3) );
@@ -359,11 +366,16 @@ class Player extends FlxSprite
 
   }
 
+
+
+
   /**
    * Update all input related variables
+   * TODO: Move out from player. Needed in menus and intro.
    */
   private function getKeys():Void
   {
+
 #if mobile
     _touches = FlxG.touches.list;
     _up = false;
@@ -411,13 +423,57 @@ class Player extends FlxSprite
       }
     }
 #else
-    _up = FlxG.keys.anyPressed(["UP", "W"]);
-    _down = FlxG.keys.anyPressed(["DOWN", "S"]);
-    _left = FlxG.keys.anyPressed(["LEFT", "A"]);
-    _right = FlxG.keys.anyPressed(["RIGHT", "D"]);
+    _gamepad = FlxG.gamepads.lastActive;
+    _keyboard = FlxG.keys;
 
-    _A = FlxG.keys.anyPressed(["X", "NUMPADFOUR"]);
-    // _B = FlxG.keys.anyPressed(["Z", "NUMPADFIVE"]);
+    if( _gamepad.anyButton() )
+    {
+
+      _inputGamepad = true;
+    }
+    else
+    {
+      if( _keyboard.anyJustPressed(["UP", "W", "DOWN", "S", "LEFT", "A", "RIGHT", "D", "X", "NUMPADFOUR"]) )
+      {
+        _inputGamepad = false;
+      }
+    }
+
+    
+
+    if( _inputGamepad )
+    {
+      _up = _gamepad.pressed(XboxButtonID.DPAD_UP);
+      _down = _gamepad.pressed(XboxButtonID.DPAD_DOWN);
+      _left = _gamepad.pressed(XboxButtonID.DPAD_LEFT);
+      _right = _gamepad.pressed(XboxButtonID.DPAD_RIGHT);
+
+      _A = _gamepad.pressed(GamepadIDs.A);
+      // _B = FlxG.keys.anyPressed(["Z", "NUMPADFIVE"]);
+    }
+    else
+    {
+      _up = _keyboard.anyPressed(["UP", "W"]);
+      _down = _keyboard.anyPressed(["DOWN", "S"]);
+      _left = _keyboard.anyPressed(["LEFT", "A"]);
+      _right = _keyboard.anyPressed(["RIGHT", "D"]);
+
+      _A = _keyboard.anyPressed(["X", "NUMPADFOUR"]);
+      // _B = FlxG.keys.anyPressed(["Z", "NUMPADFIVE"]);
+    }
+
+    #if !FLX_NO_DEBUG
+    FlxG.watch.addQuick("pressed ID", _gamepad.firstPressedButtonID());
+    FlxG.watch.addQuick("released ID", _gamepad.firstJustReleasedButtonID());
+    FlxG.watch.addQuick("justPressed ID", _gamepad.firstJustPressedButtonID());
+    FlxG.watch.addQuick("_up", _gamepad.pressed(XboxButtonID.DPAD_UP) );
+    FlxG.watch.addQuick("_down", _gamepad.pressed(XboxButtonID.DPAD_DOWN) );
+    FlxG.watch.addQuick("_left", _gamepad.pressed(XboxButtonID.DPAD_LEFT) );
+    FlxG.watch.addQuick("_right", _gamepad.pressed(XboxButtonID.DPAD_RIGHT) );
+    // FlxG.watch.addQuick("_gamepad.anyButton()", _gamepad.anyButton() );
+    // FlxG.watch.addQuick("_inputGamepad", _inputGamepad );
+    #end
+    
 #end
   }
 
