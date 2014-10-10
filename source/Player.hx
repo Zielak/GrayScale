@@ -426,10 +426,12 @@ class Player extends FlxSprite
     _gamepad = FlxG.gamepads.lastActive;
     _keyboard = FlxG.keys;
 
-    if( _gamepad.anyButton() )
+    if( _gamepad != null )
     {
-
-      _inputGamepad = true;
+      if( _gamepad.anyButton() )
+      {
+        _inputGamepad = true;
+      }
     }
     else
     {
@@ -463,15 +465,17 @@ class Player extends FlxSprite
     }
 
     #if !FLX_NO_DEBUG
-    FlxG.watch.addQuick("pressed ID", _gamepad.firstPressedButtonID());
-    FlxG.watch.addQuick("released ID", _gamepad.firstJustReleasedButtonID());
-    FlxG.watch.addQuick("justPressed ID", _gamepad.firstJustPressedButtonID());
-    FlxG.watch.addQuick("_up", _gamepad.pressed(XboxButtonID.DPAD_UP) );
-    FlxG.watch.addQuick("_down", _gamepad.pressed(XboxButtonID.DPAD_DOWN) );
-    FlxG.watch.addQuick("_left", _gamepad.pressed(XboxButtonID.DPAD_LEFT) );
-    FlxG.watch.addQuick("_right", _gamepad.pressed(XboxButtonID.DPAD_RIGHT) );
-    // FlxG.watch.addQuick("_gamepad.anyButton()", _gamepad.anyButton() );
-    // FlxG.watch.addQuick("_inputGamepad", _inputGamepad );
+    if( _gamepad != null ){
+      FlxG.watch.addQuick("pressed ID", _gamepad.firstPressedButtonID());
+      FlxG.watch.addQuick("released ID", _gamepad.firstJustReleasedButtonID());
+      FlxG.watch.addQuick("justPressed ID", _gamepad.firstJustPressedButtonID());
+      FlxG.watch.addQuick("_up", _gamepad.pressed(XboxButtonID.DPAD_UP) );
+      FlxG.watch.addQuick("_down", _gamepad.pressed(XboxButtonID.DPAD_DOWN) );
+      FlxG.watch.addQuick("_left", _gamepad.pressed(XboxButtonID.DPAD_LEFT) );
+      FlxG.watch.addQuick("_right", _gamepad.pressed(XboxButtonID.DPAD_RIGHT) );
+      // FlxG.watch.addQuick("_gamepad.anyButton()", _gamepad.anyButton() );
+      // FlxG.watch.addQuick("_inputGamepad", _inputGamepad );
+    }
     #end
     
 #end
