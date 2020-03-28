@@ -1,0 +1,21 @@
+flixel-tools convert warning log
+Converted Path /Users/darek/dev/GrayScale/
+Please visit haxeflixel.com/wiki/convert for further documentation on converting old code.
+
+
+File Path	:/Users/darek/dev/GrayScale/source/PlayerTrail.hx
+Line Number  :72
+Issue		:flicker\(
+Solution	 :The flickering logic has been moved from FlxObject to FlxSpriteUtil.flicker()
+
+File Path	:/Users/darek/dev/GrayScale/source/Coin.hx
+Line Number  :60
+Issue		:flicker\(
+Solution	 :The flickering logic has been moved from FlxObject to FlxSpriteUtil.flicker()
+
+File Path	:/Users/darek/dev/GrayScale/source/enemies/Cruncher.hx
+Line Number  :150
+Issue		:flicker\(
+Solution	 :The flickering logic has been moved from FlxObject to FlxSpriteUtil.flicker()
+
+ / End of Log.

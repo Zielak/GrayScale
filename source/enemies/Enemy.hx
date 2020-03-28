@@ -91,7 +91,7 @@ class Enemy extends FlxSprite
     }
     else
     {
-      FlxG.log.add("Enemy already has this sound. Now find me, lol.");
+      trace.add("Enemy already has this sound. Now find me, lol.");
     }
   }
 
