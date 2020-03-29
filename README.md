@@ -19,7 +19,7 @@ Protip: before dashing remember to hold your diretion keys before hitting dash k
 
 ## Enemies
 
-**Gray Cruncher**: big smile with bigger teeth on his face sais it all. He only wants to eat you. 
+**Gray Cruncher**: big smile with bigger teeth on his face sais it all. He only wants to eat you.
 
 **Tile Spectre**: sneaky one, hides inside of tiles and will scream out waves of energy when you get close. Cannot be directly attacked, the only way it can die is to tricking him to stepping into the void.
 
@@ -31,4 +31,4 @@ Sounds, music - Christopher Yabsley [@achebit](https://twitter.com/achebit)
 
 # Trivia
 
-First enemies were named "Gray Spectre" and "Tile Cruncher". Ended up swapping names by advece from Chris. That made a huge naming mess in code and sound files. Mess not included in the latest commits :)
+First enemies were named "Gray Spectre" and "Tile Cruncher". Ended up swapping names by advice from Chris. That made a huge naming mess in code and sound files. Mess not included in the latest commits :)
