@@ -139,6 +139,8 @@ class PlayState extends FlxState implements IPlayState {
 		_map = new FlxOgmoLoader(PlayList.instance.currentLevelName);
 		_tileMap = _map.loadTilemap(AssetPaths.tilemap2__png, 16, 16, "walls");
 
+		FlxG.worldBounds.set(_tileMap.x, _tileMap.y, _tileMap.width, _tileMap.height);
+
 		_tileMap.setTileProperties(0, NONE);
 		_tileMap.setTileProperties(1, NONE, voidCallback);
 		_tileMap.setTileProperties(0 + _flashTileOffset, NONE);
@@ -229,7 +231,7 @@ class PlayState extends FlxState implements IPlayState {
 		// COLLISIONS
 		// ============
 
-		FlxG.collide(_player, _decoration);
+		FlxG.collide(_player, _decoration, playerCollidesTilemap);
 		FlxG.collide(_player, _tileMap, playerCollidesTilemap);
 		FlxG.overlap(_player, _coins, playerOverlapsCoin);
 		FlxG.overlap(_player, _projectiles, playerOverlapsProjectile);
@@ -250,7 +252,7 @@ class PlayState extends FlxState implements IPlayState {
 		updateFlashings();
 
 		// ============
-		// DAShING - spam trails
+		// DASHING - spam trails
 		// ============
 		if (_player.dashing) {
 			_trailIterator++;

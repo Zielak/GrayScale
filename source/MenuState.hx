@@ -125,8 +125,6 @@ class MenuState extends FlxState {
 		} else if (screen == "chris") {
 			_chris.visible = false;
 			showScreen("gameLogo");
-		} else {
-			return;
 		}
 	}
 
