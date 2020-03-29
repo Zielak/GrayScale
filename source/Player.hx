@@ -1,37 +1,15 @@
 package;
 
-import flash.display.BitmapData;
-import flash.media.Sound;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.input.touch.FlxTouch;
 import flixel.input.gamepad.FlxGamepad;
-import flixel.input.gamepad.XboxButtonID;
+import flixel.input.keyboard.FlxKey;
 import flixel.input.keyboard.FlxKeyboard;
+import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
-import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
-import flixel.util.FlxAngle;
-import flixel.util.FlxMath;
-import flixel.util.FlxPoint;
-
-@:bitmap("assets/images/player.png") class Playerbmp extends BitmapData {}
-#if flash
-@:sound("assets/sounds/sfx_player_bounce.mp3") class Sbounce extends Sound {}
-@:sound("assets/sounds/sfx_player_bounce_energy.mp3") class SbounceHard extends Sound {}
-@:sound("assets/sounds/sfx_player_collect.mp3") class Scollect extends Sound {}
-@:sound("assets/sounds/sfx_player_dash.mp3") class Sdash extends Sound {}
-@:sound("assets/sounds/sfx_player_death.mp3") class Sdeath extends Sound {}
-@:sound("assets/sounds/sfx_player_footsteps.mp3") class Sfootsteps extends Sound {}
-#else
-@:sound("assets/sounds/sfx_player_bounce.ogg") class Sbounce extends Sound {}
-@:sound("assets/sounds/sfx_player_bounce_energy.ogg") class SbounceHard extends Sound {}
-@:sound("assets/sounds/sfx_player_collect.ogg") class Scollect extends Sound {}
-@:sound("assets/sounds/sfx_player_dash.ogg") class Sdash extends Sound {}
-@:sound("assets/sounds/sfx_player_death.ogg") class Sdeath extends Sound {}
-@:sound("assets/sounds/sfx_player_footsteps.ogg") class Sfootsteps extends Sound {}
-#end
+import flixel.tweens.FlxTween;
 
 class Player extends FlxSprite {
 	private var bounceS:FlxSound;
@@ -43,22 +21,22 @@ class Player extends FlxSprite {
 
 	private function initSounds():Void {
 		bounceS = new FlxSound();
-		bounceS.loadEmbedded(Sbounce);
+		bounceS.loadEmbedded(AssetPaths.sfx_player_bounce__ogg);
 
 		bounceHardS = new FlxSound();
-		bounceHardS.loadEmbedded(SbounceHard);
+		bounceHardS.loadEmbedded(AssetPaths.sfx_player_bounce_energy__ogg);
 
 		collectS = new FlxSound();
-		collectS.loadEmbedded(Scollect);
+		collectS.loadEmbedded(AssetPaths.sfx_player_collect__ogg);
 
 		dashS = new FlxSound();
-		dashS.loadEmbedded(Sdash);
+		dashS.loadEmbedded(AssetPaths.sfx_player_dash__ogg);
 
 		deathS = new FlxSound();
-		deathS.loadEmbedded(Sdeath);
+		deathS.loadEmbedded(AssetPaths.sfx_player_death__ogg);
 
 		foorstepsS = new FlxSound();
-		foorstepsS.loadEmbedded(Sfootsteps);
+		foorstepsS.loadEmbedded(AssetPaths.sfx_player_footsteps__ogg);
 	}
 
 	/**
@@ -184,7 +162,7 @@ class Player extends FlxSprite {
 
 		dashLog = new Array<FlxPoint>();
 
-		loadGraphic(Playerbmp, true, 16, 16);
+		loadGraphic(AssetPaths.player__png, true, 16, 16);
 
 		var fps:Int = 4;
 		animation.add("idle", [0], fps, true);
@@ -218,7 +196,7 @@ class Player extends FlxSprite {
 		initSounds();
 	}
 
-	override public function update():Void {
+	override public function update(elapsed:Float):Void {
 		if (alive && !reviving) {
 			updateTimers();
 			updateMovement();
@@ -236,7 +214,7 @@ class Player extends FlxSprite {
 			}
 		}
 
-		super.update();
+		super.update(elapsed);
 
 		// Reset this one every frame
 		onVoid = false;
@@ -251,7 +229,7 @@ class Player extends FlxSprite {
 			_tmpPoint.y = y;
 			// trace(" tmp point: "+_tmpPoint.toString());
 
-			if (FlxMath.getDistance(_tmpPoint, safeSpot) > 100) {
+			if (_tmpPoint.distanceTo(safeSpot) > 100) {
 				safeSpot.x = Math.round(x);
 				safeSpot.y = Math.round(y);
 				// trace("Remembering: "+safeSpot.toString() );
@@ -306,7 +284,7 @@ class Player extends FlxSprite {
 		}
 
 		// Update animations
-		updateAnimation();
+		decideAnimation();
 
 		/**
 		 * Sounds
@@ -350,7 +328,7 @@ class Player extends FlxSprite {
 
 				// not too far from the DPAD
 				if (_touchPoint.distanceTo(_dpadPoint) < 40 && _touchPoint.distanceTo(_dpadPoint) > 2) {
-					_touchAngle = FlxAngle.getAngle(_dpadPoint, _touchPoint);
+					_touchAngle = _dpadPoint.angleBetween(_touchPoint);
 
 					// 45 deg + 22.5 deg so we can walk diagonally
 					if (_touchAngle > -67.5 && _touchAngle < 67.5) {
@@ -374,30 +352,32 @@ class Player extends FlxSprite {
 
 		if (_gamepad != null) {
 			if (_gamepad.anyButton()) {
+				trace('PLAYER: switched to gamepad input!');
 				_inputGamepad = true;
 			}
 		} else {
 			if (_keyboard.anyJustPressed(["UP", "W", "DOWN", "S", "LEFT", "A", "RIGHT", "D", "X", "NUMPADFOUR"])) {
+				trace('PLAYER: switched to keyboard input!');
 				_inputGamepad = false;
 			}
 		}
 
 		if (_inputGamepad) {
-			_up = _gamepad.pressed(XboxButtonID.DPAD_UP);
-			_down = _gamepad.pressed(XboxButtonID.DPAD_DOWN);
-			_left = _gamepad.pressed(XboxButtonID.DPAD_LEFT);
-			_right = _gamepad.pressed(XboxButtonID.DPAD_RIGHT);
-
-			_A = _gamepad.pressed(GamepadIDs.A);
-			// _B = FlxG.keys.pressed.anyPressed(["Z", "NUMPADFIVE"]);
+			_up = _gamepad.pressed.DPAD_UP;
+			_down = _gamepad.pressed.DPAD_DOWN;
+			_left = _gamepad.pressed.DPAD_LEFT;
+			_right = _gamepad.pressed.DPAD_RIGHT;
+			// FlxGamepadInputID
+			_A = _gamepad.pressed.A;
+			// _B = FlxG.keys.anyPressed([FlxKey.Z, FlxKey.NUMPADFIVE]);
 		} else {
-			_up = _keyboard.anyPressed(["UP", "W"]);
-			_down = _keyboard.anyPressed(["DOWN", "S"]);
-			_left = _keyboard.anyPressed(["LEFT", "A"]);
-			_right = _keyboard.anyPressed(["RIGHT", "D"]);
+			_up = _keyboard.anyPressed([FlxKey.UP, FlxKey.W]);
+			_down = _keyboard.anyPressed([FlxKey.DOWN, FlxKey.S]);
+			_left = _keyboard.anyPressed([FlxKey.LEFT, FlxKey.A]);
+			_right = _keyboard.anyPressed([FlxKey.RIGHT, FlxKey.D]);
 
-			_A = _keyboard.anyPressed(["X", "NUMPADFOUR"]);
-			// _B = FlxG.keys.pressed.anyPressed(["Z", "NUMPADFIVE"]);
+			_A = _keyboard.anyPressed([FlxKey.X, FlxKey.NUMPADFOUR]);
+			// _B = FlxG.keys.anyPressed([FlxKey.Z, FlxKey.NUMPADFIVE]);
 		}
 
 		#if !FLX_NO_DEBUG
@@ -405,10 +385,10 @@ class Player extends FlxSprite {
 			FlxG.watch.add.addQuick("pressed ID", _gamepad.firstPressedButtonID());
 			FlxG.watch.add.addQuick("released ID", _gamepad.firstJustReleasedButtonID());
 			FlxG.watch.add.addQuick("justPressed ID", _gamepad.firstJustPressedButtonID());
-			FlxG.watch.add.addQuick("_up", _gamepad.pressed(XboxButtonID.DPAD_UP));
-			FlxG.watch.add.addQuick("_down", _gamepad.pressed(XboxButtonID.DPAD_DOWN));
-			FlxG.watch.add.addQuick("_left", _gamepad.pressed(XboxButtonID.DPAD_LEFT));
-			FlxG.watch.add.addQuick("_right", _gamepad.pressed(XboxButtonID.DPAD_RIGHT));
+			FlxG.watch.add.addQuick("_up", _gamepad.pressed(XInputID.DPAD_UP));
+			FlxG.watch.add.addQuick("_down", _gamepad.pressed(XInputID.DPAD_DOWN));
+			FlxG.watch.add.addQuick("_left", _gamepad.pressed(XInputID.DPAD_LEFT));
+			FlxG.watch.add.addQuick("_right", _gamepad.pressed(XInputID.DPAD_RIGHT));
 			// FlxG.watch.add.addQuick("_gamepad.anyButton()", _gamepad.anyButton() );
 			// FlxG.watch.add.addQuick("_inputGamepad", _inputGamepad );
 		}
@@ -446,14 +426,18 @@ class Player extends FlxSprite {
 				else if (_right)
 					_moveAngle = 0;
 
-				FlxAngle.rotatePoint(speed, 0, 0, 0, _moveAngle, velocity);
+				// FlxAngle.rotatePoint(speed, 0, 0, 0, _moveAngle, velocity);
+				velocity.set(speed, 0);
+				velocity.rotate(FlxPoint.weak(0, 0), _moveAngle);
 			}
 		} else {
-			FlxAngle.rotatePoint(speed, 0, 0, 0, _moveAngle, velocity);
+			// FlxAngle.rotatePoint(speed, 0, 0, 0, _moveAngle, velocity);
+			velocity.set(speed, 0);
+			velocity.rotate(FlxPoint.weak(0, 0), _moveAngle);
 		}
 	}
 
-	private function updateAnimation():Void {
+	private function decideAnimation():Void {
 		if (dashing) {
 			animation.play("dash");
 		} else {
@@ -598,7 +582,14 @@ class Player extends FlxSprite {
 			deathS.play();
 			animation.play("dash");
 
-			FlxTween.tween(this, {x: safeSpot.x, y: safeSpot.y}, 1, {ease: FlxEase.quartInOut, complete: reviveComplete, type: FlxTween.ONESHOT});
+			FlxTween.tween(this, {
+				x: safeSpot.x,
+				y: safeSpot.y
+			}, 1, {
+				ease: FlxEase.quartInOut,
+				onComplete: reviveComplete,
+				type: FlxTweenType.ONESHOT
+			});
 
 			// alive = true; // One or the other?
 			// reviving = false;

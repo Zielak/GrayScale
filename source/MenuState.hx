@@ -1,21 +1,10 @@
 package;
 
-import flash.display.BitmapData;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.text.FlxText;
+import flixel.input.keyboard.FlxKey;
 import flixel.ui.FlxButton;
-import flixel.util.FlxMath;
-import flixel.util.FlxDestroyUtil;
-
-using flixel.util.FlxSpriteUtil;
-
-@:bitmap("assets/images/logo_game_ani.png") class LogoGameAnibmp extends BitmapData {}
-@:bitmap("assets/images/blackFade.png") class BlackFadeAnibmp extends BitmapData {}
-@:bitmap("assets/images/gbjam3.png") class GBJambmp extends BitmapData {}
-@:bitmap("assets/images/intro_darekLogo.png") class Darekbmp extends BitmapData {}
-@:bitmap("assets/images/intro_chris.png") class Chrisbmp extends BitmapData {}
 
 /**
  * A FlxState which can be used for the game's menu.
@@ -51,21 +40,21 @@ class MenuState extends FlxState {
 		// add(_btnPlay);
 
 		_fader = new FlxSprite();
-		_fader.loadGraphic(BlackFadeAnibmp, true, 160, 144);
+		_fader.loadGraphic(AssetPaths.blackFade__png, true, 160, 144);
 		_fader.animation.add("fadeIn", [0, 1, 2, 3, 4, 5], 30, false);
 		_fader.animation.add("fadeOut", [4, 3, 2, 1, 0], 30, false);
 
 		_gbjam = new FlxSprite();
-		_gbjam.loadGraphic(GBJambmp, false, 160, 144);
+		_gbjam.loadGraphic(AssetPaths.gbjam3__png, 160, 144);
 
 		_darek = new FlxSprite();
-		_darek.loadGraphic(Darekbmp, false, 160, 144);
+		_darek.loadGraphic(AssetPaths.intro_darekLogo__png, false, 160, 144);
 
 		_chris = new FlxSprite();
-		_chris.loadGraphic(Chrisbmp, false, 160, 144);
+		_chris.loadGraphic(AssetPaths.intro_chris__png, false, 160, 144);
 
 		_gameLogo = new FlxSprite();
-		_gameLogo.loadGraphic(LogoGameAnibmp, true, 160, 144);
+		_gameLogo.loadGraphic(AssetPaths.logo_game_ani__png, true, 160, 144);
 		_gameLogo.animation.add("idle", [0, 0, 0, 0, 1, 2, 3, 3, 3], 5, false);
 		_gameLogo.animation.add("showLogo", [4, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9], 14, false);
 		_gameLogo.animation.add("hideLogo", [10, 11, 12, 13], 40, false);
@@ -144,7 +133,7 @@ class MenuState extends FlxState {
 	/**
 	 * Function that is called once every frame.
 	 */
-	override public function update():Void {
+	override public function update(elapsed:Float):Void {
 		if (_timer > 0) {
 			_timer -= FlxG.elapsed;
 		} else if (_timer <= 0 && _fader.animation.name != "fadeOut") {
@@ -163,7 +152,7 @@ class MenuState extends FlxState {
 			if (_gameLogo.animation.name == "idle") {
 				_gameLogo.animation.play("showLogo");
 			} else if (_gameLogo.animation.name == "showLogo") {
-				if (FlxG.keys.pressed.anyPressed(["ENTER"]) || FlxG.touches.list.length > 0) {
+				if (FlxG.keys.anyPressed([FlxKey.ENTER]) || FlxG.touches.list.length > 0) {
 					_gameLogo.animation.play("hideLogo");
 				}
 			} else if (_gameLogo.animation.name == "hideLogo") {
@@ -171,7 +160,7 @@ class MenuState extends FlxState {
 			}
 		}
 
-		super.update();
+		super.update(elapsed);
 	}
 
 	override public function destroy():Void {

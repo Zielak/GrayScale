@@ -1,15 +1,9 @@
 package;
 
-import flash.display.BitmapData;
+import flixel.effects.FlxFlicker;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.util.FlxRandom;
 import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
-
-using flixel.util.FlxSpriteUtil;
-
-@:bitmap("assets/images/playertrails.png") class PlayerTrailsbmp extends BitmapData {}
 
 class PlayerTrail extends FlxSprite {
 	private var _lifeTime:Float;
@@ -22,18 +16,18 @@ class PlayerTrail extends FlxSprite {
 		Y = Math.round(Y);
 		super(X, Y);
 
-		_lifeTime = FlxRandom.floatRanged(0.1, 0.2);
-		_dyingTime = FlxRandom.floatRanged(0.5, 0.8);
-		_fps = Math.round(FlxRandom.intRanged(10, 30) / 2);
+		_lifeTime = FlxG.random.float(0.1, 0.2);
+		_dyingTime = FlxG.random.float(0.5, 0.8);
+		_fps = Math.round(FlxG.random.int(10, 30) / 2);
 
-		loadGraphic(PlayerTrailsbmp, true, 16, 16);
+		loadGraphic(AssetPaths.playertrails__png, true, 16, 16);
 
 		animation.add("death", [0, 1, 2, 3, 4, 5], _fps, false);
 		// trace('fps: '+_fps);
 		// trace('_dyingTime: '+ _dyingTime);
 	}
 
-	override public function update():Void {
+	override public function update(elapsed:Float):Void {
 		if (alive) {
 			_lifeTime -= FlxG.elapsed;
 			if (_lifeTime <= 0) {
@@ -46,13 +40,13 @@ class PlayerTrail extends FlxSprite {
 			}
 		}
 
-		super.update();
+		super.update(elapsed);
 	}
 
 	override public function kill():Void {
 		alive = false;
 		animation.play("death");
-		flicker(3, 0.05);
+		FlxFlicker.flicker(this, 3, 0.05);
 	}
 
 	private function death():Void {

@@ -1,22 +1,10 @@
 package;
 
-import flash.display.BitmapData;
-import flixel.FlxCamera;
 import flixel.FlxG;
-import flixel.FlxObject;
-import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.util.FlxRandom;
-import flixel.addons.editors.ogmo.FlxOgmoLoader;
-import flixel.group.FlxTypedGroup;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
-import flixel.tile.FlxTilemap;
-import flixel.tile.FlxTile;
-import flixel.ui.FlxButton;
-import flixel.util.FlxMath;
-import flixel.util.FlxPoint;
-import flixel.util.FlxSpriteUtil;
+import flixel.math.FlxPoint;
 
 // import openfl.Assets;
 class TheEnd extends FlxState {
@@ -27,7 +15,7 @@ class TheEnd extends FlxState {
 
 	override public function create():Void {
 		_music = new FlxSound();
-		_music.loadEmbedded(PlayState.MainThememp3, false);
+		_music.loadEmbedded(AssetPaths.music_grayscale_theme__ogg, false);
 		_music.play();
 
 		var halfWidth:Int = Std.int(FlxG.width / 2);
@@ -42,12 +30,12 @@ class TheEnd extends FlxState {
 		_complete.bold = true;
 		_complete.shadowOffset.x = shadow.x;
 		_complete.shadowOffset.y = shadow.y;
-		_complete.setBorderStyle(FlxText.BORDER_SHADOW, GBPalette.C2, 1);
+		_complete.setBorderStyle(FlxTextBorderStyle.SHADOW, GBPalette.C2, 1);
 
 		_thanks = new FlxText(halfWidth - 60, 70, 120, "THANKS FOR PLAYING!", 8);
 		_thanks.color = GBPalette.C4;
 		_thanks.alignment = "center";
-		_thanks.setBorderStyle(FlxText.BORDER_SHADOW, GBPalette.C2, 1);
+		_thanks.setBorderStyle(FlxTextBorderStyle.SHADOW, GBPalette.C2, 1);
 		_thanks.shadowOffset.x = shadow.x;
 		_thanks.shadowOffset.y = shadow.y;
 
@@ -62,8 +50,8 @@ class TheEnd extends FlxState {
 		super.create();
 	}
 
-	override public function update():Void {
-		if (!_music.playing || FlxG.keys.pressed.anyPressed(["ENTER"]) || FlxG.touches.list.length > 0) {
+	override public function update(elapsed:Float):Void {
+		if (!_music.playing || FlxG.keys.pressed.ENTER || FlxG.touches.list.length > 0) {
 			ScoreManager.instance.resetAllScores();
 			Achievements.instance.resetGlobalTrophies();
 			Achievements.instance.resetLevelTrophies();
@@ -71,7 +59,7 @@ class TheEnd extends FlxState {
 			FlxG.switchState(new MenuState());
 		}
 
-		super.update();
+		super.update(elapsed);
 	}
 
 	override function destroy():Void {

@@ -1,14 +1,11 @@
 package;
 
 import flixel.addons.api.FlxGameJolt;
-import flash.utils.ByteArray;
 
-#if flash
 // It's for quick testing the achievements on GameJolt.
 // Put up your own private API key file here!
-@:file("zielak.private") class MyKey extends ByteArray {}
-#end
-
+// TODO: Make it work with HTML5 on GameJolt...
+// @:file("zielak.private") class MyKey extends ByteArray {}
 class Achievements {
 	/**
 	 * Complete whole game without dying from the void.
@@ -44,9 +41,7 @@ class Achievements {
 		if (_shamelessDiver < 10) {
 			_shamelessDiver++;
 			if (_shamelessDiver >= 10) {
-				#if flash
-				FlxGameJolt.addTrophy(10177);
-				#end
+				// TODO: FlxGameJolt.addTrophy(10177);
 			}
 		}
 	}
@@ -61,9 +56,7 @@ class Achievements {
 		if (_thisIsHowIBounce < 30) {
 			_thisIsHowIBounce++;
 			if (_thisIsHowIBounce >= 30) {
-				#if flash
-				FlxGameJolt.addTrophy(10180);
-				#end
+				// TODO: FlxGameJolt.addTrophy(10180);
 			}
 		}
 	}
@@ -78,9 +71,7 @@ class Achievements {
 		if (_spaceTimeTraveller < 10000) {
 			_spaceTimeTraveller++;
 			if (_spaceTimeTraveller >= 10000) {
-				#if flash
-				FlxGameJolt.addTrophy(10174);
-				#end
+				// TODO: FlxGameJolt.addTrophy(10174);
 			}
 		}
 	}
@@ -89,17 +80,13 @@ class Achievements {
 	 * Finish game
 	 */
 	public function finishedGame():Void {
-		#if flash
-		FlxGameJolt.addTrophy(10293);
-		#end
+		// TODO: FlxGameJolt.addTrophy(10293);
 	}
 
 	public function sendScore():Void {
 		// trace("Achievements Sending Score");
-		#if flash
 		var score = ScoreManager.instance.mainScore;
-		FlxGameJolt.addScore(Std.string(score), score, 33097, true);
-		#end
+		// TODO: FlxGameJolt.addScore(Std.string(score), score, 33097, true);
 	}
 
 	/**
@@ -146,31 +133,27 @@ class Achievements {
 		resetGlobalTrophies();
 		resetLevelTrophies();
 
-		#if flash
-		// trace("check FlxGameJolt.initialized");
-		if (!FlxGameJolt.initialized) {
-			// trace("FlxGameJolt.initialized = true");
-			var bytearray = new MyKey(); // This will load your private key data as a ByteArray.
-			var keystring = bytearray.readUTFBytes(bytearray.length); // This converts the ByteArray to a string.
+		/* TODO:
+			// trace("check FlxGameJolt.initialized");
+			if (!FlxGameJolt.initialized) {
+				// trace("FlxGameJolt.initialized = true");
+				var bytearray = new MyKey(); // This will load your private key data as a ByteArray.
+				var keystring = bytearray.readUTFBytes(bytearray.length); // This converts the ByteArray to a string.
 
-			// trace("FlxGameJolt.init");
-			FlxGameJolt.init(30964, keystring);
-			FlxGameJolt.authUser();
-		}
-		#end
+				// trace("FlxGameJolt.init");
+				FlxGameJolt.init(30964, keystring);
+				FlxGameJolt.authUser();
+			}
+		 */
 	}
 
 	public function sendGlobalTrophies():Void {
 		if (!_diedFromMonster) {
-			#if flash
-			FlxGameJolt.addTrophy(10281);
-			#end
+			// TODO: FlxGameJolt.addTrophy(10281);
 		}
 
 		if (!_diedFromVoid) {
-			#if flash
-			FlxGameJolt.addTrophy(10182);
-			#end
+			// TODO: FlxGameJolt.addTrophy(10182);
 		}
 	}
 }

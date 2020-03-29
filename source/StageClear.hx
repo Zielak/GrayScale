@@ -1,6 +1,5 @@
 package;
 
-import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.FlxSprite;

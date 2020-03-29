@@ -1,13 +1,8 @@
 package;
 
-import flash.display.BitmapData;
+import flixel.effects.FlxFlicker;
 import flixel.FlxSprite;
 import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
-
-using flixel.util.FlxSpriteUtil;
-
-@:bitmap("assets/images/colorcoin.png") class ColorCoinbmp extends BitmapData {}
 
 class Coin extends FlxSprite {
 	private var _deathCounter:FlxTween;
@@ -15,7 +10,7 @@ class Coin extends FlxSprite {
 	public function new(X:Float = 0, Y:Float = 0):Void {
 		super(X + 2, Y + 2);
 
-		loadGraphic(ColorCoinbmp, true, 16, 16);
+		loadGraphic(AssetPaths.colorcoin__png, true, 16, 16);
 
 		animation.add("idle", [0, 1, 2, 3], 6, true);
 		animation.add("death", [4, 4, 4, 4, 4, 4, 4, 4, 5, 6, 7], 12, false);
@@ -44,7 +39,7 @@ class Coin extends FlxSprite {
 	 */
 	private function deathTween(value:Float):Void {
 		if (value < 0.5) {
-			flicker(3, 0.05);
+			FlxFlicker.flicker(this, 3, 0.05);
 		}
 		if (value == 1) {
 			exists = false;

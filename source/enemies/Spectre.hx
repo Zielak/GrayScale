@@ -1,355 +1,299 @@
-
 package enemies;
-
-import flash.display.BitmapData;
-import flash.media.Sound;
-// #if flash
-// import flash.media.Sound;
-// #else
-// import openfl.media.Sound;
-// #end
 
 import flixel.FlxG;
 import flixel.FlxObject;
-import flixel.FlxSprite;
+import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
-import flixel.util.FlxAngle;
-import flixel.util.FlxPoint;
-import flixel.util.FlxRandom;
-import flixel.util.FlxMath;
 
-
-enum SpectreMind{
-  Deciding;
-  Searching;
-  Hiding;
-  Appearing;
-  Armed;
-  Attacking;
-  Dying;
+enum SpectreMind {
+	Deciding;
+	Searching;
+	Hiding;
+	Appearing;
+	Armed;
+	Attacking;
+	Dying;
 }
 
+class Spectre extends Enemy {
+	private function initSounds():Void {
+		var s:FlxSound;
 
-@:bitmap("assets/images/spectre.png") class Spectrebmp extends BitmapData {}
+		s = new FlxSound();
+		s.loadEmbedded(AssetPaths.sfx_spectre_appear__ogg);
+		addSound("appear", s);
 
-#if flash
-@:sound("assets/sounds/sfx_spectre_appear.mp3") class SpectreSappear extends Sound {}
-@:sound("assets/sounds/sfx_spectre_attack.mp3") class SpectreSattack extends Sound {}
-@:sound("assets/sounds/sfx_spectre_charge.mp3") class SpectreScharge extends Sound {}
-@:sound("assets/sounds/sfx_spectre_death.mp3") class SpectreSdeath extends Sound {}
-@:sound("assets/sounds/sfx_spectre_disappear.mp3") class SpectreSdisappear extends Sound {}
-#else
-@:sound("assets/sounds/sfx_spectre_appear.ogg") class SpectreSappear extends Sound {}
-@:sound("assets/sounds/sfx_spectre_attack.ogg") class SpectreSattack extends Sound {}
-@:sound("assets/sounds/sfx_spectre_charge.ogg") class SpectreScharge extends Sound {}
-@:sound("assets/sounds/sfx_spectre_death.ogg") class SpectreSdeath extends Sound {}
-@:sound("assets/sounds/sfx_spectre_disappear.ogg") class SpectreSdisappear extends Sound {}
-#end
+		s = new FlxSound();
+		s.loadEmbedded(AssetPaths.sfx_spectre_attack__ogg);
+		addSound("attack", s, 1.5);
 
+		s = new FlxSound();
+		s.loadEmbedded(AssetPaths.sfx_spectre_charge__ogg);
+		addSound("charge", s, 0.4);
 
-class Spectre extends Enemy
-{
+		s = new FlxSound();
+		s.loadEmbedded(AssetPaths.sfx_spectre_death__ogg);
+		addSound("death", s, 1.7);
 
-  private function initSounds():Void
-  {
-    var s:FlxSound;
+		s = new FlxSound();
+		s.loadEmbedded(AssetPaths.sfx_spectre_disappear__ogg);
+		addSound("disappear", s);
+	}
 
+	private var _state:SpectreMind;
+	private var _targetPos:FlxPoint = new FlxPoint();
+	private var _targetAngle:Float = 0;
+	private var _targetDirection:Int = 0x0000;
+	private var _inRange:Bool = false;
 
-    s = new FlxSound();
-    s.loadEmbedded(SpectreSappear);
-    addSound("appear", s );
+	private var _shotMade:Bool = false;
 
-    s = new FlxSound();
-    s.loadEmbedded(SpectreSattack);
-    addSound("attack", s, 1.5 );
+	private var _armDistance:Int = 50;
+	private var _attackDistance:Int = 32;
 
-    s = new FlxSound();
-    s.loadEmbedded(SpectreScharge);
-    addSound("charge", s, 0.4 );
+	// Randomize movement, 1,2,3
+	private var _moveBy:Int = 16;
 
-    s = new FlxSound();
-    s.loadEmbedded(SpectreSdeath);
-    addSound("death", s, 1.7 );
+	override public function new(X:Float = 0, Y:Float = 0) {
+		super(X, Y);
 
-    s = new FlxSound();
-    s.loadEmbedded(SpectreSdisappear);
-    addSound("disappear", s );
-  }
+		loadGraphic(AssetPaths.spectre__png, true, 16, 16);
 
-  private var _targetPos:FlxPoint = new FlxPoint();
-  private var _targetAngle:Float = 0;
-  private var _targetDirection:Int = 0x0000;
-  private var _inRange:Bool = false;
+		animation.add("appear", [0, 1, 2, 3, 4], 20, false);
+		animation.add("hide", [4, 3, 2, 1, 0], 20, false);
+		animation.add("armed", [5], 1, false);
+		animation.add("attack", [6, 7], 30, true);
 
-  private var _shotMade:Bool = false;
+		animation.play("appear");
 
+		_time.searching = 0.7;
+		_time.hiding = 0.85;
+		_time.appearing = 0.5;
+		_time.attacking = 1;
 
+		x = Math.round(x);
+		y = Math.round(y);
 
-  private var _armDistance:Int = 50;
-  private var _attackDistance:Int = 32;
+		initSounds();
 
-  // Randomize movement, 1,2,3
-  private var _moveBy:Int = 16;
+		startSearching();
+	}
 
+	/**
+	 * Update, where everything happens
+	 */
+	override public function update(elapsed:Float):Void {
+		_elapsed = FlxG.elapsed;
 
-  override public function new(X:Float=0, Y:Float=0)
-  {
-    super(X,Y);
+		// what to do?
+		if (alive) {
+			switch (_state) {
+				case Searching:
+					lookForPlayer();
+				case Armed:
+					lookForPlayer();
+				default:
+					updateCooldowns();
+			}
+		}
+		super.update(elapsed);
+	}
 
-    loadGraphic(Spectrebmp, true, 16, 16);
+	private function updateCooldowns():Void {
+		_currentTime -= _elapsed;
 
-    animation.add("appear", [0, 1, 2, 3, 4], 20, false);
-    animation.add("hide",  [4, 3, 2, 1, 0], 20, false);
-    animation.add("armed",  [5], 1, false);
-    animation.add("attack",  [6, 7], 30, true);
+		// Change state when finished
+		if (_currentTime <= 0) {
+			switch (_state) {
+				case Searching:
+					fetchTargetPosition();
+					startHiding();
+				case Hiding:
+					moveToNextTile();
+				case Appearing:
+					startSearching();
+				case Attacking:
+					startSearching();
+				default:
+			}
+		}
+		// Delayed attacking
+		if (_state == Attacking && _currentTime <= _time.attacking * 0.8) {
+			shoot();
+		}
+	}
 
-    animation.play("appear");
+	/**
+	 * Start searching for the player
+	 */
+	private function startSearching():Void {
+		_currentTime = _time.searching;
+		_state = Searching;
+		_shotMade = false;
+	}
 
+	private function startHiding():Void {
+		if (getGraphicMidpoint().distanceTo(_targetPos) > _viewDistance) {
+			// I can't see him anymore, just stay idle.
+			startSearching();
+			return;
+		}
+		// on my way!
+		animation.play("hide");
+		_currentTime = _time.hiding;
+		_state = Hiding;
+		// _disappearS.play(true);
+	}
 
-    _time.searching = 0.7;
-    _time.hiding = 0.85;
-    _time.appearing = 0.5;
-    _time.attacking = 1;
+	private function startAppearing():Void {
+		// trace("Start Appearing");
+		_currentTime = _time.appearing;
+		_state = Appearing;
+		animation.play("appear");
+		playSound("appear");
+	}
 
+	private function startArming():Void {
+		// trace("Start Arming!");
+		_state = Armed;
+		animation.play("armed");
+		playSound("charge");
+	}
 
-    x = Math.round(x);
-    y = Math.round(y);
+	private function moveToNextTile():Void {
+		// trace("Move to next tile");
+		// Move to next available tile
 
-    initSounds();
+		_moveBy = FlxG.random.int(1, 2);
 
-    startSearching();
-  }
+		switch (_targetDirection) {
+			case FlxObject.UP:
+				y -= 16 * _moveBy;
+			case FlxObject.DOWN:
+				y += 16 * _moveBy;
+			case FlxObject.LEFT:
+				x -= 16 * _moveBy;
+			case FlxObject.RIGHT:
+				x += 16 * _moveBy;
+		}
 
+		startAppearing();
+	}
 
-  /**
-   * Update, where everything happens
-   */
-  override public function update():Void
-  {
-    _elapsed = FlxG.elapsed;
+	/**
+	 * Spectre just stedded into the wall or something, he must get back
+	 */
+	public function stepBack():Void {
+		switch (_targetDirection) {
+			case FlxObject.UP:
+				y += 16 * _moveBy;
+			case FlxObject.DOWN:
+				y -= 16 * _moveBy;
+			case FlxObject.LEFT:
+				x += 16 * _moveBy;
+			case FlxObject.RIGHT:
+				x -= 16 * _moveBy;
+		}
+		startAppearing();
+	}
 
-    // what to do?
-    if(alive)
-    {
-      switch (_state) {
-        case Searching:
-          lookForPlayer();
-        case Armed:
-          lookForPlayer();
-      }
-      updateCooldowns();
-    }
-    super.update();
-  }
+	private function lookForPlayer():Void {
+		fetchTargetPosition();
+		if (getGraphicMidpoint().distanceTo(_targetPos) < _armDistance) {
+			// hold, hooold
+			if (_state != Armed)
+				startArming();
 
-  private function updateCooldowns():Void
-  {
-    _currentTime -= _elapsed;
+			if (getGraphicMidpoint().distanceTo(_targetPos) < _attackDistance) {
+				// ATTACK!
+				if (_state != Attacking)
+					startAttacking();
+			}
+		} else {
+			if (_state != Searching) {
+				// reset state when player leaves _armDistance
+				startSearching();
+			}
+		}
+	}
 
-    // Change state when finished
-    if(_currentTime <= 0){
-      switch (_state) {
-        case Searching:
-          fetchTargetPosition();
-          startHiding();
-        case Hiding:
-          moveToNextTile();
-        case Appearing:
-          startSearching();
-        case Attacking:
-          startSearching();
-      }
-    }
-    // Delayed attacking
-    if(_state == Attacking && _currentTime <= _time.attacking*0.8){
-      shoot();
-    }
-  }
+	private function startAttacking():Void {
+		// trace("Start Attacking!");
+		_state = Attacking;
+		animation.play("attack");
+		_currentTime = _time.attacking;
+		playSound("attack");
+	}
 
-  /**
-   * Start searching for the player
-   */
-  private function startSearching():Void
-  {
-    _currentTime = _time.searching;
-    _state = Searching;
-    _shotMade = false;
-  }
+	private function shoot():Void {
+		if (!_shotMade) {
+			_shotMade = true;
+			cast(FlxG.state, PlayState).flashHUD(10);
 
-  private function startHiding():Void
-  {
-    if(getGraphicMidpoint().distanceTo(_targetPos) > _viewDistance){
-      // I can't see him anymore, just stay idle.
-      startSearching();
-      return;
-    }
-    // on my way!
-    animation.play("hide");
-    _currentTime = _time.hiding;
-    _state = Hiding;
-    // _disappearS.play(true);
-  }
+			// Shoot!
+			var spr:SpectreProjectile;
+			var arr:Array<SpectreProjectile> = new Array<SpectreProjectile>();
 
-  private function startAppearing():Void
-  {
-    // trace("Start Appearing");
-    _currentTime = _time.appearing;
-    _state = Appearing;
-    animation.play("appear");
-    playSound("appear");
-  }
+			spr = new SpectreProjectile(x, y, FlxObject.RIGHT);
+			arr.push(spr);
 
-  private function startArming():Void
-  {
-    // trace("Start Arming!");
-    _state = Armed;
-    animation.play("armed");
-    playSound("charge");
-  }
+			spr = new SpectreProjectile(x, y, FlxObject.LEFT);
+			arr.push(spr);
 
-  private function moveToNextTile():Void
-  {
-    // trace("Move to next tile");
-    // Move to next available tile
+			spr = new SpectreProjectile(x, y, FlxObject.UP);
+			arr.push(spr);
 
-    _moveBy = FlxRandom.intRanged(1,2);
+			spr = new SpectreProjectile(x, y, FlxObject.DOWN);
+			arr.push(spr);
 
-    switch(_targetDirection){
-      case FlxObject.UP:
-        y -= 16*_moveBy;
-      case FlxObject.DOWN:
-        y += 16*_moveBy;
-      case FlxObject.LEFT:
-        x -= 16*_moveBy;
-      case FlxObject.RIGHT:
-        x += 16*_moveBy;
-    }
+			cast(FlxG.state, PlayState).addProjectiles(arr);
+		}
+	}
 
-    startAppearing();
-  }
-  /**
-   * Spectre just stedded into the wall or something, he must get back
-   */
-  public function stepBack():Void
-  {
-    switch(_targetDirection){
-      case FlxObject.UP:
-        y += 16*_moveBy;
-      case FlxObject.DOWN:
-        y -= 16*_moveBy;
-      case FlxObject.LEFT:
-        x += 16*_moveBy;
-      case FlxObject.RIGHT:
-        x -= 16*_moveBy;
-    }
-    startAppearing();
-  }
+	/**
+	 * Gets player position from the outside
+	 */
+	private function fetchTargetPosition():Void {
+		_targetPos = cast(FlxG.state, PlayState).getPlayerPosition();
+		_targetAngle = FlxAngle.angleBetweenPoint(this, _targetPos, true);
 
-  private function lookForPlayer():Void
-  {
-    fetchTargetPosition();
-    if(getGraphicMidpoint().distanceTo(_targetPos) < _armDistance)
-    {
-      // hold, hooold
-      if(_state != Armed) startArming();
+		// Just 4 directions
+		if (FlxMath.inBounds(_targetAngle, -45, 45)) {
+			_targetDirection = FlxObject.RIGHT;
+		} else if (FlxMath.inBounds(_targetAngle, 45, 135)) {
+			_targetDirection = FlxObject.DOWN;
+		} else if (Math.abs(_targetAngle) > 135) {
+			_targetDirection = FlxObject.LEFT;
+		} else {
+			_targetDirection = FlxObject.UP;
+		}
+	}
 
-      if(getGraphicMidpoint().distanceTo(_targetPos) < _attackDistance)
-      {
-        // ATTACK!
-        if(_state != Attacking) startAttacking();
-      }
-    }else{
-      if(_state != Searching){
-        // reset state when player leaves _armDistance
-        startSearching();
-      }
-    }
-  }
+	override public function kill():Void {
+		stopSound("appear");
+		stopSound("attack");
+		stopSound("charge");
+		stopSound("disappear");
+		playSound("death");
 
-  private function startAttacking():Void
-  {
-    // trace("Start Attacking!");
-    _state = Attacking;
-    animation.play("attack");
-    _currentTime = _time.attacking;
-    playSound("attack");
-  }
+		alive = false;
 
-  private function shoot():Void
-  {
-    if(!_shotMade)
-    {
-      _shotMade = true;
-      cast(FlxG.state, PlayState).flashHUD(10);
+		var puff:PlayerTrail;
+		puff = cast(FlxG.state, PlayState).puffSmoke(x, y);
+		puff.velocity.x = 6;
+		puff.velocity.y = -6;
+		puff = cast(FlxG.state, PlayState).puffSmoke(x, y);
+		puff.velocity.x = 6;
+		puff.velocity.y = 6;
+		puff = cast(FlxG.state, PlayState).puffSmoke(x, y);
+		puff.velocity.x = -6;
+		puff.velocity.y = 6;
+		puff = cast(FlxG.state, PlayState).puffSmoke(x, y);
+		puff.velocity.x = -6;
+		puff.velocity.y = -6;
 
-      // Shoot!
-      var spr:SpectreProjectile;
-      var arr:Array<SpectreProjectile> = new Array<SpectreProjectile>();
-
-      spr = new SpectreProjectile(x, y, FlxObject.RIGHT);
-      arr.push(spr);
-
-      spr = new SpectreProjectile(x, y, FlxObject.LEFT);
-      arr.push(spr);
-
-      spr = new SpectreProjectile(x, y, FlxObject.UP);
-      arr.push(spr);
-
-      spr = new SpectreProjectile(x, y, FlxObject.DOWN);
-      arr.push(spr);
-
-      cast(FlxG.state, PlayState).addProjectiles(arr);
-    }
-  }
-
-
-  /**
-   * Gets player position from the outside
-   */
-  private function fetchTargetPosition():Void
-  {
-    _targetPos = cast(FlxG.state, PlayState).getPlayerPosition();
-    _targetAngle = FlxAngle.angleBetweenPoint(this, _targetPos, true);
-
-    // Just 4 directions
-    if( FlxMath.inBounds(_targetAngle, -45, 45) ){
-      _targetDirection = FlxObject.RIGHT;
-    }else if( FlxMath.inBounds(_targetAngle, 45, 135) ){
-      _targetDirection = FlxObject.DOWN;
-    }else if( Math.abs(_targetAngle) > 135 ){
-      _targetDirection = FlxObject.LEFT;
-    }else{
-      _targetDirection = FlxObject.UP;
-    }
-
-  }
-
-
-  override public function kill():Void
-  {
-    stopSound("appear");
-    stopSound("attack");
-    stopSound("charge");
-    stopSound("disappear");
-    playSound("death");
-
-    alive = false;
-
-    var puff:PlayerTrail;
-    puff = cast(FlxG.state, PlayState).puffSmoke(x,y);
-    puff.velocity.x = 6;
-    puff.velocity.y = -6;
-    puff = cast(FlxG.state, PlayState).puffSmoke(x,y);
-    puff.velocity.x = 6;
-    puff.velocity.y = 6;
-    puff = cast(FlxG.state, PlayState).puffSmoke(x,y);
-    puff.velocity.x = -6;
-    puff.velocity.y = 6;
-    puff = cast(FlxG.state, PlayState).puffSmoke(x,y);
-    puff.velocity.x = -6;
-    puff.velocity.y = -6;
-
-    exists = false;
-  }
-
+		exists = false;
+	}
 }

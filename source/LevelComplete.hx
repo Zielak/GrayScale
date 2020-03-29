@@ -1,23 +1,13 @@
 package;
 
-import flash.display.BitmapData;
-import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import flixel.util.FlxPoint;
+import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
+import flixel.text.FlxText;
 
 using flixel.util.FlxSpriteUtil;
-
-@:bitmap("assets/images/whiteFade.png") class WhiteFadebmp extends BitmapData {}
-#if !flash
-@:sound("assets/music/music_victory_loop.ogg") class Victorymp3 extends flash.media.Sound {}
-#else
-@:sound("assets/music/music_victory_loop128.mp3") class Victorymp3 extends flash.media.Sound {}
-#end
 
 class LevelComplete extends FlxState {
 	private var _music:FlxSound;
@@ -50,13 +40,13 @@ class LevelComplete extends FlxState {
 		Achievements.instance.sendScore();
 
 		_music = new FlxSound();
-		_music.loadEmbedded(Victorymp3, true);
+		_music.loadEmbedded(AssetPaths.music_victory_loop__ogg, true);
 
 		_bam = new FlxSound();
-		_bam.loadEmbedded(Player.Sbounce);
+		_bam.loadEmbedded(AssetPaths.sfx_player_bounce__ogg);
 
 		_dash = new FlxSound();
-		_dash.loadEmbedded(Player.Sdash);
+		_dash.loadEmbedded(AssetPaths.sfx_player_dash__ogg);
 
 		var halfWidth:Int = Std.int(FlxG.width / 2);
 		var halfHeight:Int = Std.int(FlxG.height / 2);
@@ -69,12 +59,12 @@ class LevelComplete extends FlxState {
 		_bg.x = _bg.y = 0;
 
 		_whiteFace = new FlxSprite();
-		_whiteFace.loadGraphic(WhiteFadebmp, false, 160, 288);
+		_whiteFace.loadGraphic(AssetPaths.whiteFade__png, false, 160, 288);
 		_whiteFace.x = 0;
 		_whiteFace.y = -144;
 
 		_player = new FlxSprite();
-		_player.loadGraphic(Player.Playerbmp, false, 16, 16);
+		_player.loadGraphic(AssetPaths.player__png, false, 16, 16);
 		_player.animation.add("spin", [1, 3, 5, 7, 9, 11, 13, 15], 1, true);
 		_player.animation.play("spin");
 		_player.y = halfHeight - 8;
@@ -83,7 +73,7 @@ class LevelComplete extends FlxState {
 		_levelNum = new FlxText(halfWidth - 40, 20, 80, "LEVEL " + PlayList.instance.currentLevel, 8);
 		_levelNum.color = GBPalette.C4;
 		_levelNum.alignment = "center";
-		_levelNum.setBorderStyle(FlxText.BORDER_SHADOW, GBPalette.C1, 1);
+		_levelNum.setBorderStyle(FlxTextBorderStyle.SHADOW, GBPalette.C1, 1);
 		_levelNum.shadowOffset.x = shadow.x;
 		_levelNum.shadowOffset.y = shadow.y;
 		_levelNum.visible = false;
@@ -94,21 +84,21 @@ class LevelComplete extends FlxState {
 		_complete.bold = true;
 		_complete.shadowOffset.x = shadow.x;
 		_complete.shadowOffset.y = shadow.y;
-		_complete.setBorderStyle(FlxText.BORDER_SHADOW, GBPalette.C1, 1);
+		_complete.setBorderStyle(FlxTextBorderStyle.SHADOW, GBPalette.C1, 1);
 		_complete.visible = false;
 
 		_levelscore1 = new FlxText(20, 73, 120, "LEVEL SCORE: " + ScoreManager.instance.score, 8);
 		_levelscore1.color = GBPalette.C3;
 		_levelscore1.shadowOffset.x = shadow.x;
 		_levelscore1.shadowOffset.y = shadow.y;
-		_levelscore1.setBorderStyle(FlxText.BORDER_SHADOW, GBPalette.C1, 1);
+		_levelscore1.setBorderStyle(FlxTextBorderStyle.SHADOW, GBPalette.C1, 1);
 		_levelscore1.visible = false;
 
 		_mainscore1 = new FlxText(20, 88, 120, "GAME SCORE: " + ScoreManager.instance.mainScore, 8);
 		_mainscore1.color = GBPalette.C3;
 		_mainscore1.shadowOffset.x = shadow.x;
 		_mainscore1.shadowOffset.y = shadow.y;
-		_mainscore1.setBorderStyle(FlxText.BORDER_SHADOW, GBPalette.C1, 1);
+		_mainscore1.setBorderStyle(FlxTextBorderStyle.SHADOW, GBPalette.C1, 1);
 		_mainscore1.visible = false;
 
 		_footer = new FlxText(halfWidth - 70, 115, 140, "[START] NEXT", 8);
@@ -133,7 +123,7 @@ class LevelComplete extends FlxState {
 	/**
 	 * Function that is called once every frame.
 	 */
-	override public function update():Void {
+	override public function update(elapsed:Float):Void {
 		if (_theTimer < 400) {
 			_theTimer++;
 		}
@@ -166,24 +156,24 @@ class LevelComplete extends FlxState {
 			}
 			if (_theTimer > 120 && !_complete.visible) {
 				_complete.visible = true;
-				FlxG.camera.shake(0.03, 0.15, null, true, FlxCamera.SHAKE_VERTICAL_ONLY);
+				FlxG.camera.shake(0.03, 0.15, null, true, flixel.util.FlxAxes.Y);
 				_bam.play(true);
 			}
 			if (_theTimer > 180 && !_levelscore1.visible) {
 				_levelscore1.visible = true;
-				FlxG.camera.shake(0.01, 0.1, null, true, FlxCamera.SHAKE_VERTICAL_ONLY);
+				FlxG.camera.shake(0.01, 0.1, null, true, flixel.util.FlxAxes.Y);
 				_bam.play(true);
 			}
 			if (_theTimer > 220 && !_mainscore1.visible) {
 				_mainscore1.visible = true;
-				FlxG.camera.shake(0.01, 0.1, null, true, FlxCamera.SHAKE_VERTICAL_ONLY);
+				FlxG.camera.shake(0.01, 0.1, null, true, flixel.util.FlxAxes.Y);
 				_bam.play(true);
 			}
 			if (_theTimer > 280 && !_footer.visible) {
 				_footer.visible = true;
 			}
 
-			if (FlxG.keys.pressed.anyPressed(["ENTER"]) || FlxG.touches.list.length > 0) {
+			if (FlxG.keys.pressed.ENTER || FlxG.touches.list.length > 0) {
 				_music.stop();
 				ScoreManager.instance.resetLevelScore();
 				PlayList.instance.nextLevel();
@@ -193,7 +183,7 @@ class LevelComplete extends FlxState {
 
 		// else if(_gameLogo.animation.name == "showLogo")
 		//   {
-		//     if(FlxG.keys.pressed.anyPressed(["ENTER"])){
+		//     if(FlxG.keys.pressed.ENTER){
 		//       PlayList.instance.nextLevel();
 		//     FlxG.switchState(new PlayState());
 		//     }
@@ -203,6 +193,6 @@ class LevelComplete extends FlxState {
 		//
 		//   }
 
-		super.update();
+		super.update(elapsed);
 	}
 }

@@ -2,12 +2,6 @@ package;
 
 import flixel.FlxSprite;
 import flixel.FlxG;
-import flixel.FlxObject;
-import flash.display.BitmapData;
-
-using flixel.util.FlxSpriteUtil;
-
-@:bitmap("assets/images/spectreProjectile.png") class SpectreProjectilebmp extends BitmapData {}
 
 class SpectreProjectile extends FlxSprite {
 	private var _lifeTime:Float = 0.25;
@@ -18,7 +12,7 @@ class SpectreProjectile extends FlxSprite {
 		Y = Math.round(Y);
 		super(X, Y);
 
-		loadGraphic(SpectreProjectilebmp, true, 16, 16);
+		loadGraphic(AssetPaths.spectreProjectile__png, true, 16, 16);
 
 		animation.add("idle", [0, 1, 2, 3], 1, false);
 
@@ -42,8 +36,8 @@ class SpectreProjectile extends FlxSprite {
 		}
 	}
 
-	override public function update():Void {
-		super.update();
+	override public function update(elapsed:Float):Void {
+		super.update(elapsed);
 		if (alive) {
 			_lifeTime -= FlxG.elapsed;
 			if (_lifeTime <= 0) {
