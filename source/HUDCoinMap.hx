@@ -1,11 +1,10 @@
 package;
 
-import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.util.FlxAngle;
-import flixel.util.FlxPoint;
-import flixel.group.FlxTypedGroup;
+import flixel.group.FlxGroup;
+import flixel.math.FlxAngle;
+import flixel.math.FlxPoint;
 
 using flixel.util.FlxSpriteUtil;
 
@@ -31,10 +30,10 @@ class HUDCoinMap extends FlxTypedGroup<FlxSprite> {
 		_targetPoint = new FlxPoint(_halfWidth, _halfHeight);
 	}
 
-	override public function update():Void {
+	override public function update(elapsed:Float):Void {
 		if (members.length > 0) {
 			for (i in 0..._points.length) {
-				_angles[i] = FlxAngle.getAngle(_targetPoint, _points[i]) - 90;
+				_angles[i] = _targetPoint.angleBetween(_points[i]) - 90;
 				_distances[i] = _points[i].distanceTo(_targetPoint);
 
 				if (_distances[i] < _visibilityDistance) {

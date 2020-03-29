@@ -1,33 +1,17 @@
 package;
 
-import flash.display.BitmapData;
+import enemies.Cruncher;
+import enemies.Spectre;
+import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.util.FlxRandom;
-import flixel.addons.editors.ogmo.FlxOgmoLoader;
-import flixel.group.FlxTypedGroup;
+import flixel.group.FlxGroup;
+import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
-import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
-import flixel.tile.FlxTile;
-import flixel.ui.FlxButton;
-import flixel.util.FlxMath;
-import flixel.util.FlxPoint;
-import flixel.util.FlxSpriteUtil;
-// import openfl.Assets;
-import enemies.Cruncher;
-import enemies.Spectre;
-
-#if !flash
-@:sound("assets/music/music_grayscale_theme.ogg") class MainThememp3 extends flash.media.Sound {}
-#else
-@:sound("assets/music/music_grayscale_theme128.mp3") class MainThememp3 extends flash.media.Sound {}
-#end
-@:bitmap("assets/images/boulders.png") class Bouldersbmp extends BitmapData {}
-@:bitmap("assets/images/tilemap2.png") class Tilemapbmp extends BitmapData {}
 
 class PlayState extends FlxState implements IPlayState {
 	private static inline var TILE_WIDTH:Int = 16;
@@ -87,7 +71,7 @@ class PlayState extends FlxState implements IPlayState {
 		FlxG.timeScale = 1;
 
 		_music = new FlxSound();
-		_music.loadEmbedded(MainThememp3, true);
+		_music.loadEmbedded(AssetPaths.music_grayscale_theme__ogg, true);
 
 		if (!PlayList.instance.isLastLevel) {
 			_music.play();
@@ -107,9 +91,9 @@ class PlayState extends FlxState implements IPlayState {
 		add(_decoration);
 		add(_crunchers);
 
-		// FlxG.camera.follow(_player, FlxCamera.STYLE_LOCKON, 1);
+		// FlxG.camera.follow(_player, FlxCameraFollowStyle.LOCKON, 1);
 		FlxG.camera.focusOn(new FlxPoint(_player.x, _player.y));
-		FlxG.camera.follow(_player, FlxCamera.STYLE_LOCKON, 5);
+		FlxG.camera.follow(_player, FlxCameraFollowStyle.LOCKON, 5);
 
 		_hud = new HUD();
 		_hud.maxCoins = _maxCoins;
@@ -152,7 +136,7 @@ class PlayState extends FlxState implements IPlayState {
 		var ANY:Int = FlxObject.ANY;
 
 		_map = new FlxOgmoLoader(PlayList.instance.currentLevelName);
-		_tileMap = _map.loadTilemap(Tilemapbmp, 16, 16, "walls");
+		_tileMap = _map.loadTilemap(AssetPaths.tilemap2__png, 16, 16, "walls");
 
 		_tileMap.setTileProperties(0, NONE);
 		_tileMap.setTileProperties(1, NONE, voidCallback);
@@ -202,31 +186,41 @@ class PlayState extends FlxState implements IPlayState {
 	/**
 	 * Function that is called once every frame.
 	 */
-	override public function update():Void {
+	override public function update(elapsed:Float):Void {
 		if (_player.reviving)
 			return;
 		// Change level for debuggin
 
 		#if debug
-		if (FlxG.keys.pressed.anyPressed(["ONE"]))
+		if (FlxG.keys.pressed.ONE)
 			PlayList.instance.loadLevel(0);
-		if (FlxG.keys.pressed.anyPressed(["TWO"]))
+		if (FlxG.keys.pressed.TWO)
 			PlayList.instance.loadLevel(1);
-		if (FlxG.keys.pressed.anyPressed(["THREE"]))
+		if (FlxG.keys.pressed.THREE)
 			PlayList.instance.loadLevel(2);
-		if (FlxG.keys.pressed.anyPressed(["FOUR"]))
+		if (FlxG.keys.pressed.FOUR)
 			PlayList.instance.loadLevel(3);
-		if (FlxG.keys.pressed.anyPressed(["FIVE"]))
+		if (FlxG.keys.pressed.FIVE)
 			PlayList.instance.loadLevel(4);
-		if (FlxG.keys.pressed.anyPressed(["SIX"]))
+		if (FlxG.keys.pressed.SIX)
 			PlayList.instance.loadLevel(5);
-		if (FlxG.keys.pressed.anyPressed(["SEVEN"]))
+		if (FlxG.keys.pressed.SEVEN)
 			PlayList.instance.loadLevel(6);
-		if (FlxG.keys.pressed.anyPressed(["EIGHT"]))
+		if (FlxG.keys.pressed.EIGHT)
 			PlayList.instance.loadLevel(7);
-		if (FlxG.keys.pressed.anyPressed(["NINE"]))
+		if (FlxG.keys.pressed.NINE)
 			PlayList.instance.loadLevel(8);
-		if (FlxG.keys.pressed.anyPressed(["ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE"]))
+		if (FlxG.keys.anyPressed([
+			FlxKey.ONE,
+			FlxKey.TWO,
+			FlxKey.THREE,
+			FlxKey.FOUR,
+			FlxKey.FIVE,
+			FlxKey.SIX,
+			FlxKey.SEVEN,
+			FlxKey.EIGHT,
+			FlxKey.NINE
+		]))
 			killPlayer();
 		#end
 
@@ -274,7 +268,7 @@ class PlayState extends FlxState implements IPlayState {
 		// _hudCoinsMap.x = FlxG.camera.x;
 		// _hudCoinsMap.y = FlxG.camera.y;
 
-		super.update();
+		super.update(elapsed);
 	}
 
 	/**
@@ -302,10 +296,10 @@ class PlayState extends FlxState implements IPlayState {
 			_spectres.add(enemy);
 		} else if (entityName == "boulder") {
 			var deco = new FlxSprite(Math.round(x), Math.round(y));
-			deco.loadGraphic(Bouldersbmp, true, 32, 32);
+			deco.loadGraphic(AssetPaths.boulders__png, true, 32, 32);
 			deco.animation.add("idle", [0, 1, 2, 3], 0);
 			deco.animation.play("idle");
-			deco.animation.frameIndex = FlxRandom.intRanged(0, 3);
+			deco.animation.frameIndex = FlxG.random.int(0, 3);
 
 			deco.offset.x = 4;
 			deco.offset.y = 4;
@@ -445,7 +439,9 @@ class PlayState extends FlxState implements IPlayState {
 	 */
 	private function voidCallback(T:FlxObject, P:FlxObject):Void {
 		var type = Type.getClassName(Type.getClass(P));
-		trace.add("Void collision with " + type);
+
+		trace("Void collision with " + type);
+
 		if (type == "Player") {
 			_player.onVoid = true;
 			if (!_player.dashing && !_player.reviving) {
@@ -471,9 +467,9 @@ class PlayState extends FlxState implements IPlayState {
 			_player.bounce(bounceSprite(_player, _player.direction), true);
 
 			if (T.touching == FlxObject.LEFT || T.touching == FlxObject.RIGHT) {
-				FlxG.camera.shake(0.05, 0.13, null, true, FlxCamera.SHAKE_HORIZONTAL_ONLY);
+				FlxG.camera.shake(0.05, 0.13, null, true, flixel.util.FlxAxes.X);
 			} else {
-				FlxG.camera.shake(0.05, 0.13, null, true, FlxCamera.SHAKE_VERTICAL_ONLY);
+				FlxG.camera.shake(0.05, 0.13, null, true, flixel.util.FlxAxes.X);
 			}
 			Achievements.instance.thisIsHowIBounce();
 			flashHUD(3);

@@ -1,8 +1,6 @@
 package;
 
-import flixel.FlxSprite;
-import flixel.group.FlxTypedGroup;
-import flixel.util.FlxPoint;
+import flixel.math.FlxPoint;
 
 interface IPlayState {
 	public var player(get, null):Player;

@@ -1,7 +1,5 @@
 package;
 
-import flixel.FlxG;
-
 class PlayList {
 	private var _firstEntry:Bool;
 

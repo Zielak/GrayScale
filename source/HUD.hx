@@ -1,18 +1,11 @@
 package;
 
-import flash.display.BitmapData;
-import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
-import flixel.group.FlxTypedGroup;
 import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import flixel.tweens.FlxTween;
 
 using flixel.util.FlxSpriteUtil;
-
-@:bitmap("assets/images/dashhud.png") class DashHUDbmp extends BitmapData {}
 
 class HUD extends FlxTypedGroup<FlxSprite> {
 	// private var _sprBack:FlxSprite;
@@ -42,7 +35,7 @@ class HUD extends FlxTypedGroup<FlxSprite> {
 		var px = Std.int(FlxG.width * 0.5) - 16;
 		var py = Std.int(FlxG.height * 0.5) - 16;
 
-		_dashCooldown = new FlxSprite().loadGraphic(DashHUDbmp, true, 32, 32);
+		_dashCooldown = new FlxSprite().loadGraphic(AssetPaths.dashhud__png, true, 32, 32);
 		_dashCooldown.animation.add("idle", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 20, false);
 		// _dashCooldown.drawRect(0, 0, h, w, GBPalette.C4);
 		// _dashCooldown.drawRect(1, 1, h-2, w-2, GBPalette.C4);
@@ -62,16 +55,16 @@ class HUD extends FlxTypedGroup<FlxSprite> {
 		_coinsTxt = new FlxText(FlxG.width - 82, 2, 80, "COLORS: 0/0", 8);
 		_coinsTxt.alignment = "right";
 		_coinsTxt.borderColor = GBPalette.C1;
-		_coinsTxt.setBorderStyle(FlxText.BORDER_OUTLINE, GBPalette.C1, 1, 1);
+		_coinsTxt.setBorderStyle(FlxTextBorderStyle.OUTLINE, GBPalette.C1, 1, 1);
 
 		_levelTxt = new FlxText(FlxG.width - 82, 12, 80, "LEVEL: 0", 8);
 		_levelTxt.alignment = "right";
 		_levelTxt.borderColor = GBPalette.C1;
-		_levelTxt.setBorderStyle(FlxText.BORDER_OUTLINE, GBPalette.C1, 1, 1);
+		_levelTxt.setBorderStyle(FlxTextBorderStyle.OUTLINE, GBPalette.C1, 1, 1);
 
 		_scoreTxt = new FlxText(2, 2, 0, "SCORE: 0", 8);
 		_scoreTxt.borderColor = GBPalette.C1;
-		_scoreTxt.setBorderStyle(FlxText.BORDER_OUTLINE, GBPalette.C1, 1, 1);
+		_scoreTxt.setBorderStyle(FlxTextBorderStyle.OUTLINE, GBPalette.C1, 1, 1);
 
 		// _sprHealth = new FlxSprite(4, _txtHealth.y + (_txtHealth.height/2)  - 4, AssetPaths.health<strong>png);
 
