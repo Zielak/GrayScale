@@ -9,6 +9,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
+import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.tile.FlxTilemap;

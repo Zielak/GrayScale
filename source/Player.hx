@@ -382,15 +382,15 @@ class Player extends FlxSprite {
 
 		#if !FLX_NO_DEBUG
 		if (_gamepad != null) {
-			FlxG.watch.add.addQuick("pressed ID", _gamepad.firstPressedButtonID());
-			FlxG.watch.add.addQuick("released ID", _gamepad.firstJustReleasedButtonID());
-			FlxG.watch.add.addQuick("justPressed ID", _gamepad.firstJustPressedButtonID());
-			FlxG.watch.add.addQuick("_up", _gamepad.pressed(XInputID.DPAD_UP));
-			FlxG.watch.add.addQuick("_down", _gamepad.pressed(XInputID.DPAD_DOWN));
-			FlxG.watch.add.addQuick("_left", _gamepad.pressed(XInputID.DPAD_LEFT));
-			FlxG.watch.add.addQuick("_right", _gamepad.pressed(XInputID.DPAD_RIGHT));
-			// FlxG.watch.add.addQuick("_gamepad.anyButton()", _gamepad.anyButton() );
-			// FlxG.watch.add.addQuick("_inputGamepad", _inputGamepad );
+			FlxG.watch.addQuick("pressed ID", _gamepad.firstPressedID());
+			FlxG.watch.addQuick("released ID", _gamepad.firstJustReleasedID());
+			FlxG.watch.addQuick("justPressed ID", _gamepad.firstJustPressedID());
+			FlxG.watch.addQuick("_up", _gamepad.pressed.DPAD_UP);
+			FlxG.watch.addQuick("_down", _gamepad.pressed.DPAD_DOWN);
+			FlxG.watch.addQuick("_left", _gamepad.pressed.DPAD_LEFT);
+			FlxG.watch.addQuick("_right", _gamepad.pressed.DPAD_RIGHT);
+			// FlxG.watch.addQuick("_gamepad.anyButton()", _gamepad.anyButton() );
+			// FlxG.watch.addQuick("_inputGamepad", _inputGamepad );
 		}
 		#end
 		#end
