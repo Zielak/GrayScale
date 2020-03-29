@@ -19,8 +19,7 @@ class LevelComplete extends FlxState {
 
 	private var _whiteFace:FlxSprite;
 
-	private var _player:FlxSprite;
-	private var _playerYRate:Float = 0;
+	private var _player:SpinningPlayer;
 
 	private var _theTimer:Int = -30;
 
@@ -63,12 +62,7 @@ class LevelComplete extends FlxState {
 		_whiteFace.x = 0;
 		_whiteFace.y = -144;
 
-		_player = new FlxSprite();
-		_player.loadGraphic(AssetPaths.player__png, false, 16, 16);
-		_player.animation.add("spin", [1, 3, 5, 7, 9, 11, 13, 15], 1, true);
-		_player.animation.play("spin");
-		_player.y = halfHeight - 8;
-		_player.x = halfWidth - 8;
+		_player = new SpinningPlayer(halfWidth - 8, halfHeight - 8);
 
 		_levelNum = new FlxText(halfWidth - 40, 20, 80, "LEVEL " + PlayList.instance.currentLevel, 8);
 		_levelNum.color = GBPalette.C4;
@@ -131,15 +125,6 @@ class LevelComplete extends FlxState {
 		if (_theTimer > 30 && !_dashed) {
 			_dashed = true;
 			_dash.play();
-		}
-
-		if (_player.animation.curAnim.frameRate < 60) {
-			_player.animation.curAnim.frameRate += 1;
-		}
-
-		if (_theTimer > 20 && _player.y > -20) {
-			_playerYRate += 0.08;
-			_player.y -= Std.int(_playerYRate);
 		}
 
 		if (_theTimer > 45 && _whiteFace.y < 144) {

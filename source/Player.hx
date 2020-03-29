@@ -351,12 +351,12 @@ class Player extends FlxSprite {
 		_keyboard = FlxG.keys;
 
 		if (_gamepad != null) {
-			if (_gamepad.anyButton()) {
+			if (!_inputGamepad && _gamepad.anyButton()) {
 				trace('PLAYER: switched to gamepad input!');
 				_inputGamepad = true;
 			}
 		} else {
-			if (_keyboard.anyJustPressed(["UP", "W", "DOWN", "S", "LEFT", "A", "RIGHT", "D", "X", "NUMPADFOUR"])) {
+			if (_inputGamepad && _keyboard.anyJustPressed(["UP", "W", "DOWN", "S", "LEFT", "A", "RIGHT", "D", "X", "NUMPADFOUR"])) {
 				trace('PLAYER: switched to keyboard input!');
 				_inputGamepad = false;
 			}
