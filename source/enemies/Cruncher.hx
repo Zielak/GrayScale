@@ -95,8 +95,8 @@ class Cruncher extends Enemy {
 				case Attacking:
 					attackPlayer();
 				default:
-					updateCooldowns();
 			}
+			updateCooldowns();
 		}
 
 		// Not cool, should be refreshed only a moment before

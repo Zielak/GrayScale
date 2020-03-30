@@ -95,8 +95,8 @@ class Spectre extends Enemy {
 				case Armed:
 					lookForPlayer();
 				default:
-					updateCooldowns();
 			}
+			updateCooldowns();
 		}
 		super.update(elapsed);
 	}
