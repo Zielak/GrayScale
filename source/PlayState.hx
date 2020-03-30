@@ -443,7 +443,7 @@ class PlayState extends FlxState implements IPlayState {
 	private function voidCallback(T:FlxObject, P:FlxObject):Void {
 		var type = Type.getClassName(Type.getClass(P));
 
-		trace("Void collision with " + type);
+		// trace("Void collision with " + type);
 
 		if (type == "Player") {
 			_player.onVoid = true;
@@ -617,13 +617,19 @@ class PlayState extends FlxState implements IPlayState {
 
 	/**
 	 * Adds puff one puff particle in the world. Used with player's dashing
-	 * @param  ?X [description]
-	 * @param  ?Y [description]
-	 * @return    [description]
+	 * @param  ?X x position
+	 * @param  ?Y y position
+	 * @param  ?SX x speed
+	 * @param  ?SY y speed
+	 * @return
 	 */
-	public function puffSmoke(?X:Float = 0, ?Y:Float = 0):PlayerTrail {
+	public function puffSmoke(?X:Float = 0, ?Y:Float = 0, ?SX:Float = 0, ?SY:Float = 0):PlayerTrail {
 		var newTrail = new PlayerTrail(X, Y);
+		newTrail.velocity.x = SX;
+		newTrail.velocity.y = SY;
+
 		_playerTrails.add(newTrail);
+
 		return newTrail;
 	}
 

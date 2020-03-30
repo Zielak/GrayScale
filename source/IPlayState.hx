@@ -9,7 +9,7 @@ interface IPlayState {
 	public function addProjectiles(A:Array<Dynamic>):Void;
 
 	public function flashHUD(?duration:Int):Void;
-	public function puffSmoke(?X:Float, ?Y:Float):PlayerTrail;
+	public function puffSmoke(?X:Float = 0, ?Y:Float = 0, ?SX:Float = 0, ?SY:Float = 0):PlayerTrail;
 
 	public function getPlayerPosition():FlxPoint;
 }

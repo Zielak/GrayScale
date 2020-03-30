@@ -132,6 +132,7 @@ class Player extends FlxSprite {
 	private var _elapsed:Float;
 
 	public var dashing:Bool = false;
+	public var chargingDash:Bool = false;
 	public var canDash:Bool = true;
 
 	private var _inputGamepad:Bool;
@@ -165,16 +166,18 @@ class Player extends FlxSprite {
 		loadGraphic(AssetPaths.player__png, true, 16, 16);
 
 		var fps:Int = 4;
-		animation.add("idle", [0], fps, true);
-		animation.add("d", [1, 2], fps, true);
-		animation.add("dr", [3, 4], fps, true);
-		animation.add("r", [5, 6], fps, true);
-		animation.add("ur", [7, 8], fps, true);
-		animation.add("u", [9, 10], fps, true);
-		animation.add("ul", [11, 12], fps, true);
-		animation.add("l", [13, 14], fps, true);
-		animation.add("dl", [15, 16], fps, true);
-		animation.add("dash", [17], fps, true);
+		animation.add("idle", [16], fps, true);
+		animation.add("d", [0, 1], fps, true);
+		animation.add("dr", [2, 3], fps, true);
+		animation.add("r", [4, 5], fps, true);
+		animation.add("ur", [6, 7], fps, true);
+		animation.add("u", [8, 9], fps, true);
+		animation.add("ul", [10, 11], fps, true);
+		animation.add("l", [12, 13], fps, true);
+		animation.add("dl", [14, 15], fps, true);
+		animation.add("charging", [17, 18, 19, 18, 17, 20, 17, 18, 19, 20], 15, true);
+		animation.add("dashing", [21], fps, true);
+		animation.add("void", [22], fps, true);
 
 		drag.x = drag.y = 1200;
 		// elasticity = 1;
@@ -253,8 +256,10 @@ class Player extends FlxSprite {
 		}
 	}
 
+	/**
+		Keeps dashing speed until duration is over
+	**/
 	private function updateDashing():Void {
-		// Keeps dashing speed until duration is over
 		if (dashing) {
 			if (dash.timeLeft > 0) {
 				dash.timeLeft -= _elapsed;
@@ -279,8 +284,16 @@ class Player extends FlxSprite {
 		move();
 
 		// Dash if we can
-		if (_A && !dashing && canDash && (_up || _down || _left || _right)) {
-			startDashing();
+		if (_A && !dashing && canDash) {
+			if (_up || _down || _left || _right) {
+				startDashing();
+			} else if (!chargingDash && canDash) {
+				startCharging();
+			}
+		}
+
+		if (!_A && chargingDash) {
+			stopCharging(true);
 		}
 
 		// Update animations
@@ -439,7 +452,9 @@ class Player extends FlxSprite {
 
 	private function decideAnimation():Void {
 		if (dashing) {
-			animation.play("dash");
+			animation.play("dashing");
+		} else if (chargingDash) {
+			animation.play("charging");
 		} else {
 			if (velocity.x == 0 && velocity.y == 0) {
 				animation.play("idle");
@@ -466,7 +481,21 @@ class Player extends FlxSprite {
 		}
 	}
 
+	private function startCharging():Void {
+		chargingDash = true;
+	}
+
+	private function stopCharging(cancelled:Bool = false):Void {
+		chargingDash = false;
+
+		if (cancelled) {
+			var velocity = FlxPoint.weak(14, 0).rotate(FlxPoint.weak(0, 0), FlxG.random.float(0, 360));
+			cast(FlxG.state, PlayState).puffSmoke(x - offset.x, y - offset.y, velocity.x, velocity.y);
+		}
+	}
+
 	private function startDashing():Void {
+		stopCharging();
 		dashing = true;
 		canDash = false;
 		dash.addedMoreTime = false;
@@ -580,7 +609,7 @@ class Player extends FlxSprite {
 			reviving = true;
 
 			deathS.play();
-			animation.play("dash");
+			animation.play("void");
 
 			FlxTween.tween(this, {
 				x: safeSpot.x,
@@ -625,19 +654,13 @@ class Player extends FlxSprite {
 
 		visible = false;
 
-		var puff:PlayerTrail;
-		puff = cast(FlxG.state, PlayState).puffSmoke(x, y);
-		puff.velocity.x = 9;
-		puff.velocity.y = -9;
-		puff = cast(FlxG.state, PlayState).puffSmoke(x, y);
-		puff.velocity.x = 9;
-		puff.velocity.y = 9;
-		puff = cast(FlxG.state, PlayState).puffSmoke(x, y);
-		puff.velocity.x = -9;
-		puff.velocity.y = 9;
-		puff = cast(FlxG.state, PlayState).puffSmoke(x, y);
-		puff.velocity.x = -9;
-		puff.velocity.y = -9;
+		var puffX = x - offset.x;
+		var puffY = y - offset.y;
+
+		cast(FlxG.state, PlayState).puffSmoke(puffX, puffY, 11, -11);
+		cast(FlxG.state, PlayState).puffSmoke(puffX, puffY, 11, 11);
+		cast(FlxG.state, PlayState).puffSmoke(puffX, puffY, -11, 11);
+		cast(FlxG.state, PlayState).puffSmoke(puffX, puffY, -11, -11);
 
 		// FlxG.switchState(new DeathState());
 	}
