@@ -16,7 +16,7 @@
     <Width>1600</Width>
     <Height>1600</Height>
   </LevelMaximumSize>
-  <Filename>C:\Dev\Games\gbjam3\GreyScale\assets\data\testlevel1.oep</Filename>
+  <Filename>C:\dev\GrayScale\assets\maps\testlevel1.oep</Filename>
   <AngleMode>Degrees</AngleMode>
   <CameraEnabled>false</CameraEnabled>
   <CameraSize>
