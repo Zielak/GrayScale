@@ -280,19 +280,12 @@ class Spectre extends Enemy {
 
 		alive = false;
 
-		var puff:PlayerTrail;
-		puff = cast(FlxG.state, PlayState).puffSmoke(x, y);
-		puff.velocity.x = 6;
-		puff.velocity.y = -6;
-		puff = cast(FlxG.state, PlayState).puffSmoke(x, y);
-		puff.velocity.x = 6;
-		puff.velocity.y = 6;
-		puff = cast(FlxG.state, PlayState).puffSmoke(x, y);
-		puff.velocity.x = -6;
-		puff.velocity.y = 6;
-		puff = cast(FlxG.state, PlayState).puffSmoke(x, y);
-		puff.velocity.x = -6;
-		puff.velocity.y = -6;
+		var position = new FlxPoint(x, y);
+
+		cast(FlxG.state, PlayState).spawnEffect('smoke', position, FlxPoint.weak(6, -6));
+		cast(FlxG.state, PlayState).spawnEffect('smoke', position, FlxPoint.weak(6, 6));
+		cast(FlxG.state, PlayState).spawnEffect('smoke', position, FlxPoint.weak(-6, 6));
+		cast(FlxG.state, PlayState).spawnEffect('smoke', position, FlxPoint.weak(-6, -6));
 
 		exists = false;
 	}

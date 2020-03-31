@@ -1,5 +1,6 @@
 package;
 
+import flixel.effects.FlxFlicker;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -10,33 +11,25 @@ import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
 
 class Player extends FlxSprite {
-	private var bounceS:FlxSound;
-	private var bounceHardS:FlxSound;
-	private var collectS:FlxSound;
-	private var dashS:FlxSound;
-	private var deathS:FlxSound;
-	private var foorstepsS:FlxSound;
+	private var sounds:Dynamic<FlxSound> = {
+		bounce: new FlxSound(),
+		bounceHard: new FlxSound(),
+		collect: new FlxSound(),
+		dash: new FlxSound(),
+		death: new FlxSound(),
+		foorsteps: new FlxSound(),
+	}
 
 	private function initSounds():Void {
-		bounceS = new FlxSound();
-		bounceS.loadEmbedded(AssetPaths.sfx_player_bounce__ogg);
-
-		bounceHardS = new FlxSound();
-		bounceHardS.loadEmbedded(AssetPaths.sfx_player_bounce_energy__ogg);
-
-		collectS = new FlxSound();
-		collectS.loadEmbedded(AssetPaths.sfx_player_collect__ogg);
-
-		dashS = new FlxSound();
-		dashS.loadEmbedded(AssetPaths.sfx_player_dash__ogg);
-
-		deathS = new FlxSound();
-		deathS.loadEmbedded(AssetPaths.sfx_player_death__ogg);
-
-		foorstepsS = new FlxSound();
-		foorstepsS.loadEmbedded(AssetPaths.sfx_player_footsteps__ogg);
+		sounds.bounce.loadEmbedded(AssetPaths.sfx_player_bounce__ogg);
+		sounds.bounceHard.loadEmbedded(AssetPaths.sfx_player_bounce_energy__ogg);
+		sounds.collect.loadEmbedded(AssetPaths.sfx_player_collect__ogg);
+		sounds.dash.loadEmbedded(AssetPaths.sfx_player_dash__ogg);
+		sounds.death.loadEmbedded(AssetPaths.sfx_player_death__ogg);
+		sounds.foorsteps.loadEmbedded(AssetPaths.sfx_player_footsteps__ogg);
 	}
 
 	/**
@@ -60,6 +53,7 @@ class Player extends FlxSprite {
 		cooldown: 0, // Current cooldown of dashing
 		time: 0.18, // How long can you dash
 		timeMore: 0.01, // Added when you keep holding dash key
+		// TODO: Make it a number and use :Dynamic<Float>
 		addedMoreTime: false,
 		timeLeft: 0, // How long can you dash?
 		maxCD: 1,
@@ -129,7 +123,12 @@ class Player extends FlxSprite {
 		return _direction;
 	}
 
-	private var _elapsed:Float;
+	public function get_invincible():Bool {
+		return dashing || justHurt;
+	}
+
+	public var maxHealth:Float = 1.8;
+	public var justHurt:Bool = false;
 
 	public var dashing:Bool = false;
 	public var chargingDash:Bool = false;
@@ -196,16 +195,20 @@ class Player extends FlxSprite {
 		_touchPoint = new FlxPoint(0, 0);
 		#end
 
+		health = 1.8;
+		pixelPerfectRender = true;
+
 		initSounds();
 	}
 
 	override public function update(elapsed:Float):Void {
 		if (alive && !reviving) {
-			updateTimers();
+			updateTimers(elapsed);
 			updateMovement();
 			updateSafeSpot();
-			updateDashing();
+			updateDashing(elapsed);
 			updateAchievements();
+			spark();
 		}
 
 		if (!alive && !reviving) {
@@ -240,29 +243,31 @@ class Player extends FlxSprite {
 		}
 	}
 
-	private function updateTimers():Void {
-		_elapsed = FlxG.elapsed;
-
-		dash.timeSpent += _elapsed;
+	private function updateTimers(elapsed:Float):Void {
+		dash.timeSpent += elapsed;
 
 		/**
 		 * Dashing cooldowns
 		 */
 		if (dash.cooldown > 0) {
-			dash.cooldown -= dash.regenCD * _elapsed;
+			dash.cooldown -= dash.regenCD * elapsed;
 		} else if (dash.cooldown < 0) {
 			dash.cooldown = 0;
 			canDash = true;
+		}
+
+		if (alive && !justHurt && health < maxHealth) {
+			health += elapsed / 10;
 		}
 	}
 
 	/**
 		Keeps dashing speed until duration is over
 	**/
-	private function updateDashing():Void {
+	private function updateDashing(elapsed:Float):Void {
 		if (dashing) {
 			if (dash.timeLeft > 0) {
-				dash.timeLeft -= _elapsed;
+				dash.timeLeft -= elapsed;
 
 				if (dash.timeLeft <= 0 && _A && !dash.addedMoreTime) {
 					dash.timeLeft += dash.timeMore;
@@ -303,9 +308,9 @@ class Player extends FlxSprite {
 		 * Sounds
 		 */
 		if (!dashing && (_up || _down || _left || _right)) {
-			foorstepsS.play();
+			sounds.foorsteps.play();
 		} else {
-			foorstepsS.stop();
+			sounds.foorsteps.stop();
 		}
 
 		/**
@@ -490,7 +495,9 @@ class Player extends FlxSprite {
 
 		if (cancelled) {
 			var velocity = FlxPoint.weak(14, 0).rotate(FlxPoint.weak(0, 0), FlxG.random.float(0, 360));
-			cast(FlxG.state, PlayState).puffSmoke(x - offset.x, y - offset.y, velocity.x, velocity.y);
+			var position = FlxPoint.weak(x - offset.x, y - offset.y);
+
+			cast(FlxG.state, PlayState).spawnEffect('ring', position, velocity);
 		}
 	}
 
@@ -503,8 +510,8 @@ class Player extends FlxSprite {
 		speed = dash.speed;
 		dash.timeLeft = dash.time;
 
-		dashS.play();
-		foorstepsS.stop();
+		sounds.dash.play();
+		sounds.foorsteps.stop();
 
 		cast(FlxG.state, PlayState).flashHUD();
 		FlxG.camera.shake(0.01, 0.1);
@@ -522,6 +529,36 @@ class Player extends FlxSprite {
 		dashLog = new Array<FlxPoint>();
 	}
 
+	private function startHurting():Void {
+		justHurt = true;
+
+		sounds.death.play();
+
+		var position = FlxPoint.weak(x - offset.x, y - offset.y);
+
+		cast(FlxG.state, PlayState).spawnEffect('ring', position, FlxPoint.weak(40, 0));
+		cast(FlxG.state, PlayState).spawnEffect('ring', position, FlxPoint.weak(-40, 0));
+		cast(FlxG.state, PlayState).spawnEffect('ring', position, FlxPoint.weak(0, 40));
+		cast(FlxG.state, PlayState).spawnEffect('ring', position, FlxPoint.weak(0, -40));
+
+		FlxFlicker.flicker(this, 2, 0.05);
+		new FlxTimer().start(3, stopHurting);
+	}
+
+	private function stopHurting(timer:FlxTimer):Void {
+		justHurt = false;
+		FlxFlicker.stopFlickering(this);
+	}
+
+	private function spark():Void {
+		if (health < maxHealth && (health / maxHealth) * FlxG.random.float() < 0.12) {
+			var position = FlxPoint.weak(x - offset.x, y - offset.y);
+			var velocity = FlxPoint.weak(FlxG.random.float(15, 60), 0).rotate(FlxPoint.weak(0, 0), FlxG.random.float(0, 360));
+
+			cast(FlxG.state, PlayState).spawnEffect('ring', position, velocity);
+		}
+	}
+
 	/**
 	 * Bounce off walls
 	 * @param  newDirection new direction of movement
@@ -530,10 +567,10 @@ class Player extends FlxSprite {
 	public function bounce(newDirection:Int, ?hard:Bool = false):Void {
 		direction = newDirection;
 		if (hard) {
-			bounceHardS.play(true);
+			sounds.bounceHard.play(true);
 			resetDashingTimer(0.019);
 		} else {
-			bounceS.play(true);
+			sounds.bounce.play(true);
 		}
 	}
 
@@ -589,7 +626,7 @@ class Player extends FlxSprite {
 	 * Cha-ching for collected coin
 	 */
 	public function collectedCoin():Void {
-		collectS.play(true);
+		sounds.collect.play(true);
 	}
 
 	public function updateAchievements():Void {
@@ -608,7 +645,7 @@ class Player extends FlxSprite {
 			alive = false;
 			reviving = true;
 
-			deathS.play();
+			sounds.death.play();
 			animation.play("void");
 
 			FlxTween.tween(this, {
@@ -642,8 +679,20 @@ class Player extends FlxSprite {
 		reviving = false;
 	}
 
+	override public function hurt(Damage:Float) {
+		if (get_invincible()) {
+			return;
+		}
+
+		super.hurt(Damage);
+
+		if (health > 0) {
+			startHurting();
+		}
+	}
+
 	override public function kill():Void {
-		deathS.play();
+		sounds.death.play();
 		alive = false;
 
 		#if debug
@@ -654,15 +703,14 @@ class Player extends FlxSprite {
 
 		visible = false;
 
-		var puffX = x - offset.x;
-		var puffY = y - offset.y;
+		var position = FlxPoint.weak(x - offset.x, y - offset.y);
 
-		cast(FlxG.state, PlayState).puffSmoke(puffX, puffY, 11, -11);
-		cast(FlxG.state, PlayState).puffSmoke(puffX, puffY, 11, 11);
-		cast(FlxG.state, PlayState).puffSmoke(puffX, puffY, -11, 11);
-		cast(FlxG.state, PlayState).puffSmoke(puffX, puffY, -11, -11);
+		cast(FlxG.state, PlayState).spawnEffect('smoke', position, FlxPoint.weak(11, -11));
+		cast(FlxG.state, PlayState).spawnEffect('smoke', position, FlxPoint.weak(11, 11));
+		cast(FlxG.state, PlayState).spawnEffect('smoke', position, FlxPoint.weak(-11, 11));
+		cast(FlxG.state, PlayState).spawnEffect('smoke', position, FlxPoint.weak(-11, -11));
 
-		// FlxG.switchState(new DeathState());
+		// FlxG.switchState(new sounds.Deathtate());
 	}
 
 	// override public function revive():Void

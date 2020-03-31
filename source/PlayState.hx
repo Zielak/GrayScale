@@ -47,8 +47,8 @@ class PlayState extends FlxState implements IPlayState {
 	private var _spectres = new FlxTypedGroup<FlxSprite>();
 
 	private var _bouncyWalls = new FlxTypedGroup<FlxSprite>();
+	private var _effectsGroup = new FlxTypedGroup<FlxSprite>();
 
-	private var _playerTrails = new FlxTypedGroup<FlxSprite>();
 	private var _trailIterator:Int = 0;
 	private var _trailGenerateAt:Int = 0;
 
@@ -85,7 +85,7 @@ class PlayState extends FlxState implements IPlayState {
 		add(_hudCoinsMap);
 
 		add(_projectiles);
-		add(_playerTrails);
+		add(_effectsGroup);
 		add(_coins);
 		add(_spectres);
 		add(_player);
@@ -94,7 +94,7 @@ class PlayState extends FlxState implements IPlayState {
 
 		// FlxG.camera.follow(_player, FlxCameraFollowStyle.LOCKON, 1);
 		FlxG.camera.focusOn(new FlxPoint(_player.x, _player.y));
-		FlxG.camera.follow(_player, FlxCameraFollowStyle.LOCKON, 5);
+		FlxG.camera.follow(_player, FlxCameraFollowStyle.NO_DEAD_ZONE, 1);
 
 		_hud = new HUD();
 		_hud.maxCoins = _maxCoins;
@@ -124,7 +124,7 @@ class PlayState extends FlxState implements IPlayState {
 
 		_bouncyWalls = null;
 
-		_playerTrails = null;
+		_effectsGroup = null;
 		_music = null;
 	}
 
@@ -224,7 +224,7 @@ class PlayState extends FlxState implements IPlayState {
 			FlxKey.EIGHT,
 			FlxKey.NINE
 		]))
-			killPlayer();
+			_player.kill();
 		#end
 
 		// ============
@@ -259,7 +259,7 @@ class PlayState extends FlxState implements IPlayState {
 			if (_trailIterator >= _trailGenerateAt) {
 				_trailIterator = 0;
 				var newTrail = new PlayerTrail(_player.x - _player.offset.x, _player.y - _player.offset.y);
-				_playerTrails.add(newTrail);
+				_effectsGroup.add(newTrail);
 			}
 		}
 
@@ -451,7 +451,7 @@ class PlayState extends FlxState implements IPlayState {
 				// Faulty below. Can land between 4 void tiles, right in the middle...
 				if (T.overlapsPoint(_player.getMidpoint())) {
 					ScoreManager.instance.reducePointsFor("void");
-					killPlayer(true);
+					hurtPlayer(true);
 				}
 			}
 		} else if (type == "enemies.Spectre") {
@@ -476,9 +476,6 @@ class PlayState extends FlxState implements IPlayState {
 			}
 			Achievements.instance.thisIsHowIBounce();
 			flashHUD(3);
-
-			// var ringBlink = new RingBlink(_player.x,_player.y);
-			// add(ringBlink);
 		}
 	}
 
@@ -519,7 +516,7 @@ class PlayState extends FlxState implements IPlayState {
 		} else {
 			if (E.alive && _player.alive) {
 				// Well, you're dead
-				killPlayer();
+				hurtPlayer();
 			}
 		}
 	}
@@ -545,7 +542,7 @@ class PlayState extends FlxState implements IPlayState {
 		if (!_player.dashing) {
 			if (E.alive && _player.alive) {
 				// Well, you're dead
-				killPlayer();
+				hurtPlayer();
 			}
 		}
 	}
@@ -600,7 +597,7 @@ class PlayState extends FlxState implements IPlayState {
 	 * Kill player and optionally revive him into last known safe position
 	 * @param  void if true, then player can go back to last known position
 	 */
-	private function killPlayer(?void:Bool = false):Void {
+	private function hurtPlayer(?void:Bool = false):Void {
 		if (void) {
 			// trace("I'm trying to get you back at safe spot...");
 			Achievements.instance.diedFromVoid();
@@ -608,29 +605,31 @@ class PlayState extends FlxState implements IPlayState {
 			// if(_music.playing) _music.pause();
 			_player.reviveAtSafeSpot();
 		} else {
-			// Man, you're done!
-			_music.stop();
-			Achievements.instance.diedFromMonster();
-			_player.kill();
+			_player.hurt(1);
+			if (_player.health <= 0) {
+				// Man, you're done!
+				_music.stop();
+				Achievements.instance.diedFromMonster();
+			}
 		}
 	}
 
-	/**
-	 * Adds puff one puff particle in the world. Used with player's dashing
-	 * @param  ?X x position
-	 * @param  ?Y y position
-	 * @param  ?SX x speed
-	 * @param  ?SY y speed
-	 * @return
-	 */
-	public function puffSmoke(?X:Float = 0, ?Y:Float = 0, ?SX:Float = 0, ?SY:Float = 0):PlayerTrail {
-		var newTrail = new PlayerTrail(X, Y);
-		newTrail.velocity.x = SX;
-		newTrail.velocity.y = SY;
+	public function spawnEffect(type:String, position:FlxPoint, velocity:FlxPoint):FlxSprite {
+		var newEffect:FlxSprite = new FlxSprite(position.x, position.y);
 
-		_playerTrails.add(newTrail);
+		switch (type) {
+			case 'ring':
+				newEffect = new RingBlink(position.x, position.y);
+			case 'smoke':
+			default:
+				newEffect = new PlayerTrail(position.x, position.y);
+		}
 
-		return newTrail;
+		newEffect.velocity.copyFrom(velocity);
+
+		_effectsGroup.add(newEffect);
+
+		return newEffect;
 	}
 
 	public function addProjectile(S:Dynamic):Void {

@@ -22,7 +22,7 @@ class PlayerTrail extends FlxSprite {
 
 		loadGraphic(AssetPaths.playertrails__png, true, 16, 16);
 
-		animation.add("death", [0, 1, 2, 3, 4, 5], _fps, false);
+		animation.add("death", [0, 1, 2, 3, 4, 5], _fps, false, FlxG.random.bool(), FlxG.random.bool());
 		// trace('fps: '+_fps);
 		// trace('_dyingTime: '+ _dyingTime);
 	}
