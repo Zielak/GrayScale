@@ -623,6 +623,7 @@ class PlayState extends FlxState implements IPlayState {
 			case 'ring':
 				newEffect = new RingBlink(position.x, position.y);
 			case 'smoke':
+				newEffect = new PlayerTrail(position.x, position.y);
 			default:
 				newEffect = new PlayerTrail(position.x, position.y);
 		}
