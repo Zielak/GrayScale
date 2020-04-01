@@ -1,5 +1,7 @@
 package enemies;
 
+import AssetPaths.Images;
+import AssetPaths.Sounds;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.math.FlxAngle;
@@ -22,23 +24,23 @@ class Spectre extends Enemy {
 		var s:FlxSound;
 
 		s = new FlxSound();
-		s.loadEmbedded(AssetPaths.sfx_spectre_appear__ogg);
+		s.loadEmbedded(Sounds.sfx_spectre_appear__ogg);
 		addSound("appear", s);
 
 		s = new FlxSound();
-		s.loadEmbedded(AssetPaths.sfx_spectre_attack__ogg);
+		s.loadEmbedded(Sounds.sfx_spectre_attack__ogg);
 		addSound("attack", s, 1.5);
 
 		s = new FlxSound();
-		s.loadEmbedded(AssetPaths.sfx_spectre_charge__ogg);
+		s.loadEmbedded(Sounds.sfx_spectre_charge__ogg);
 		addSound("charge", s, 0.4);
 
 		s = new FlxSound();
-		s.loadEmbedded(AssetPaths.sfx_spectre_death__ogg);
+		s.loadEmbedded(Sounds.sfx_spectre_death__ogg);
 		addSound("death", s, 1.7);
 
 		s = new FlxSound();
-		s.loadEmbedded(AssetPaths.sfx_spectre_disappear__ogg);
+		s.loadEmbedded(Sounds.sfx_spectre_disappear__ogg);
 		addSound("disappear", s);
 	}
 
@@ -59,7 +61,7 @@ class Spectre extends Enemy {
 	override public function new(X:Float = 0, Y:Float = 0) {
 		super(X, Y);
 
-		loadGraphic(AssetPaths.spectre__png, true, 16, 16);
+		loadGraphic(Images.spectre__png, true, 16, 16);
 
 		animation.add("appear", [0, 1, 2, 3, 4], 20, false);
 		animation.add("hide", [4, 3, 2, 1, 0], 20, false);

@@ -1,5 +1,8 @@
 package;
 
+import AssetPaths.Sounds;
+import AssetPaths.Images;
+import AssetPaths.Musics;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -39,13 +42,13 @@ class LevelComplete extends FlxState {
 		Achievements.instance.sendScore();
 
 		_music = new FlxSound();
-		_music.loadEmbedded(AssetPaths.music_victory_loop__ogg, true);
+		_music.loadEmbedded(Musics.music_victory_loop__ogg, true);
 
 		_bam = new FlxSound();
-		_bam.loadEmbedded(AssetPaths.sfx_player_bounce__ogg);
+		_bam.loadEmbedded(Sounds.sfx_player_bounce__ogg);
 
 		_dash = new FlxSound();
-		_dash.loadEmbedded(AssetPaths.sfx_player_dash__ogg);
+		_dash.loadEmbedded(Sounds.sfx_player_dash__ogg);
 
 		var halfWidth:Int = Std.int(FlxG.width / 2);
 		var halfHeight:Int = Std.int(FlxG.height / 2);
@@ -58,7 +61,7 @@ class LevelComplete extends FlxState {
 		_bg.x = _bg.y = 0;
 
 		_whiteFace = new FlxSprite();
-		_whiteFace.loadGraphic(AssetPaths.whiteFade__png, false, 160, 288);
+		_whiteFace.loadGraphic(Images.whiteFade__png, false, 160, 288);
 		_whiteFace.x = 0;
 		_whiteFace.y = -144;
 

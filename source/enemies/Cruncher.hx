@@ -1,5 +1,7 @@
 package enemies;
 
+import AssetPaths.Images;
+import AssetPaths.Sounds;
 import flixel.effects.FlxFlicker;
 import flixel.FlxG;
 import flixel.math.FlxAngle;
@@ -19,15 +21,15 @@ class Cruncher extends Enemy {
 		var s:FlxSound;
 
 		s = new FlxSound();
-		s.loadEmbedded(AssetPaths.sfx_cruncher_alert__ogg);
+		s.loadEmbedded(Sounds.sfx_cruncher_alert__ogg);
 		addSound("alert", s, 0.8);
 
 		s = new FlxSound();
-		s.loadEmbedded(AssetPaths.sfx_cruncher_attack__ogg);
+		s.loadEmbedded(Sounds.sfx_cruncher_attack__ogg);
 		addSound("attack", s);
 
 		s = new FlxSound();
-		s.loadEmbedded(AssetPaths.sfx_cruncher_death__ogg);
+		s.loadEmbedded(Sounds.sfx_cruncher_death__ogg);
 		addSound("death", s);
 	}
 
@@ -50,7 +52,7 @@ class Cruncher extends Enemy {
 		/**
 		 * Graphics
 		 */
-		loadGraphic(AssetPaths.cruncher__png, true, 16, 16);
+		loadGraphic(Images.cruncher__png, true, 16, 16);
 
 		var _fps:Int = FlxG.random.int(3, 8);
 		animation.add("flying", [0, 1], _fps, true);

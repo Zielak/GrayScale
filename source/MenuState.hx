@@ -1,5 +1,6 @@
 package;
 
+import AssetPaths.Images;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -40,21 +41,21 @@ class MenuState extends FlxState {
 		// add(_btnPlay);
 
 		_fader = new FlxSprite();
-		_fader.loadGraphic(AssetPaths.blackFade__png, true, 160, 144);
+		_fader.loadGraphic(Images.blackFade__png, true, 160, 144);
 		_fader.animation.add("fadeIn", [0, 1, 2, 3, 4, 5], 30, false);
 		_fader.animation.add("fadeOut", [4, 3, 2, 1, 0], 30, false);
 
 		_gbjam = new FlxSprite();
-		_gbjam.loadGraphic(AssetPaths.gbjam3__png, 160, 144);
+		_gbjam.loadGraphic(Images.gbjam3__png, 160, 144);
 
 		_darek = new FlxSprite();
-		_darek.loadGraphic(AssetPaths.intro_darekLogo__png, false, 160, 144);
+		_darek.loadGraphic(Images.intro_darekLogo__png, false, 160, 144);
 
 		_chris = new FlxSprite();
-		_chris.loadGraphic(AssetPaths.intro_chris__png, false, 160, 144);
+		_chris.loadGraphic(Images.intro_chris__png, false, 160, 144);
 
 		_gameLogo = new FlxSprite();
-		_gameLogo.loadGraphic(AssetPaths.logo_game_ani__png, true, 160, 144);
+		_gameLogo.loadGraphic(Images.logo_game_ani__png, true, 160, 144);
 		_gameLogo.animation.add("idle", [0, 0, 0, 0, 1, 2, 3, 3, 3], 5, false);
 		_gameLogo.animation.add("showLogo", [4, 5, 6, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9], 14, false);
 		_gameLogo.animation.add("hideLogo", [10, 11, 12, 13], 40, false);

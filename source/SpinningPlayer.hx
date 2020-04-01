@@ -1,3 +1,4 @@
+import AssetPaths.Images;
 import flixel.FlxSprite;
 
 class SpinningPlayer extends FlxSprite {
@@ -8,7 +9,7 @@ class SpinningPlayer extends FlxSprite {
 	public function new(X:Float = 0, Y:Float = 0) {
 		super(X, Y);
 
-		loadGraphic(AssetPaths.player__png, true, 16, 16);
+		loadGraphic(Images.player__png, true, 16, 16);
 
 		animation.add("spin", [1, 3, 5, 7, 9, 11, 13, 15], 1, true);
 		animation.play("spin");

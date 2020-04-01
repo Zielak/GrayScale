@@ -1,5 +1,7 @@
 package;
 
+import AssetPaths.Musics;
+import AssetPaths.Images;
 import enemies.Cruncher;
 import enemies.Spectre;
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
@@ -72,7 +74,7 @@ class PlayState extends FlxState implements IPlayState {
 		FlxG.timeScale = 1;
 
 		_music = new FlxSound();
-		_music.loadEmbedded(AssetPaths.music_grayscale_theme__ogg, true);
+		_music.loadEmbedded(Musics.music_grayscale_theme__ogg, true);
 
 		if (!PlayList.instance.isLastLevel) {
 			_music.play();
@@ -137,7 +139,7 @@ class PlayState extends FlxState implements IPlayState {
 		var ANY:Int = FlxObject.ANY;
 
 		_map = new FlxOgmoLoader(PlayList.instance.currentLevelName);
-		_tileMap = _map.loadTilemap(AssetPaths.tilemap2__png, 16, 16, "walls");
+		_tileMap = _map.loadTilemap(Images.tilemap2__png, 16, 16, "walls");
 
 		FlxG.worldBounds.set(_tileMap.x, _tileMap.y, _tileMap.width, _tileMap.height);
 
@@ -299,7 +301,7 @@ class PlayState extends FlxState implements IPlayState {
 			_spectres.add(enemy);
 		} else if (entityName == "boulder") {
 			var deco = new FlxSprite(Math.round(x), Math.round(y));
-			deco.loadGraphic(AssetPaths.boulders__png, true, 32, 32);
+			deco.loadGraphic(Images.boulders__png, true, 32, 32);
 			deco.animation.add("idle", [0, 1, 2, 3], 0);
 			deco.animation.play("idle");
 			deco.animation.frameIndex = FlxG.random.int(0, 3);

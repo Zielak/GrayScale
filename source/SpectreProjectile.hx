@@ -1,5 +1,6 @@
 package;
 
+import AssetPaths.Images;
 import flixel.FlxSprite;
 import flixel.FlxG;
 
@@ -12,7 +13,7 @@ class SpectreProjectile extends FlxSprite {
 		Y = Math.round(Y);
 		super(X, Y);
 
-		loadGraphic(AssetPaths.spectreProjectile__png, true, 16, 16);
+		loadGraphic(Images.spectreProjectile__png, true, 16, 16);
 
 		animation.add("idle", [0, 1, 2, 3], 1, false);
 

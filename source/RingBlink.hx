@@ -1,5 +1,7 @@
 package;
 
+import AssetPaths.Images;
+import flixel.FlxG;
 import flixel.FlxSprite;
 
 class RingBlink extends FlxSprite {
@@ -8,7 +10,7 @@ class RingBlink extends FlxSprite {
 		Y = Math.round(Y);
 		super(X, Y);
 
-		loadGraphic(AssetPaths.ringBlink__png, true, 16, 16);
+		loadGraphic(Images.ringBlink__png, true, 16, 16);
 
 		animation.add("death", [0, 1, 2, 3, 4, 5], 20, false, FlxG.random.bool(), FlxG.random.bool());
 

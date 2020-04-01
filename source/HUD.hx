@@ -1,5 +1,6 @@
 package;
 
+import AssetPaths.Images;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
@@ -35,7 +36,7 @@ class HUD extends FlxTypedGroup<FlxSprite> {
 		var px = Std.int(FlxG.width * 0.5) - 16;
 		var py = Std.int(FlxG.height * 0.5) - 16;
 
-		_dashCooldown = new FlxSprite().loadGraphic(AssetPaths.dashhud__png, true, 32, 32);
+		_dashCooldown = new FlxSprite().loadGraphic(Images.dashhud__png, true, 32, 32);
 		_dashCooldown.animation.add("idle", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 20, false);
 		// _dashCooldown.drawRect(0, 0, h, w, GBPalette.C4);
 		// _dashCooldown.drawRect(1, 1, h-2, w-2, GBPalette.C4);

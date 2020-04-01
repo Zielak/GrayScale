@@ -1,5 +1,6 @@
 package;
 
+import AssetPaths.Images;
 import flixel.effects.FlxFlicker;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -20,7 +21,7 @@ class PlayerTrail extends FlxSprite {
 		_dyingTime = FlxG.random.float(0.5, 0.8);
 		_fps = Math.round(FlxG.random.int(10, 30) / 2);
 
-		loadGraphic(AssetPaths.playertrails__png, true, 16, 16);
+		loadGraphic(Images.playertrails__png, true, 16, 16);
 
 		animation.add("death", [0, 1, 2, 3, 4, 5], _fps, false, FlxG.random.bool(), FlxG.random.bool());
 		// trace('fps: '+_fps);

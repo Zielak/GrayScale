@@ -1,5 +1,6 @@
 package;
 
+import AssetPaths.Images;
 import flixel.effects.FlxFlicker;
 import flixel.FlxSprite;
 import flixel.tweens.FlxTween;
@@ -10,7 +11,7 @@ class Coin extends FlxSprite {
 	public function new(X:Float = 0, Y:Float = 0):Void {
 		super(X + 2, Y + 2);
 
-		loadGraphic(AssetPaths.colorcoin__png, true, 16, 16);
+		loadGraphic(Images.colorcoin__png, true, 16, 16);
 
 		animation.add("idle", [0, 1, 2, 3], 6, true);
 		animation.add("death", [4, 4, 4, 4, 4, 4, 4, 4, 5, 6, 7], 12, false);

@@ -1,5 +1,6 @@
 package;
 
+import AssetPaths.Musics;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.system.FlxSound;
@@ -15,7 +16,7 @@ class TheEnd extends FlxState {
 
 	override public function create():Void {
 		_music = new FlxSound();
-		_music.loadEmbedded(AssetPaths.music_grayscale_theme__ogg, false);
+		_music.loadEmbedded(Musics.music_grayscale_theme__ogg, false);
 		_music.play();
 
 		var halfWidth:Int = Std.int(FlxG.width / 2);

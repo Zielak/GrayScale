@@ -1,5 +1,7 @@
 package;
 
+import AssetPaths.Images;
+import AssetPaths.Sounds;
 import flixel.effects.FlxFlicker;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -24,12 +26,12 @@ class Player extends FlxSprite {
 	}
 
 	private function initSounds():Void {
-		sounds.bounce.loadEmbedded(AssetPaths.sfx_player_bounce__ogg);
-		sounds.bounceHard.loadEmbedded(AssetPaths.sfx_player_bounce_energy__ogg);
-		sounds.collect.loadEmbedded(AssetPaths.sfx_player_collect__ogg);
-		sounds.dash.loadEmbedded(AssetPaths.sfx_player_dash__ogg);
-		sounds.death.loadEmbedded(AssetPaths.sfx_player_death__ogg);
-		sounds.foorsteps.loadEmbedded(AssetPaths.sfx_player_footsteps__ogg);
+		sounds.bounce.loadEmbedded(Sounds.sfx_player_bounce__ogg);
+		sounds.bounceHard.loadEmbedded(Sounds.sfx_player_bounce_energy__ogg);
+		sounds.collect.loadEmbedded(Sounds.sfx_player_collect__ogg);
+		sounds.dash.loadEmbedded(Sounds.sfx_player_dash__ogg);
+		sounds.death.loadEmbedded(Sounds.sfx_player_death__ogg);
+		sounds.foorsteps.loadEmbedded(Sounds.sfx_player_footsteps__ogg);
 	}
 
 	/**
@@ -162,7 +164,7 @@ class Player extends FlxSprite {
 
 		dashLog = new Array<FlxPoint>();
 
-		loadGraphic(AssetPaths.player__png, true, 16, 16);
+		loadGraphic(Images.player__png, true, 16, 16);
 
 		var fps:Int = 4;
 		animation.add("idle", [16], fps, true);
