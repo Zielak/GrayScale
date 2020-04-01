@@ -125,6 +125,8 @@ class Player extends FlxSprite {
 		return _direction;
 	}
 
+	public var invincible(get, null):Bool;
+
 	public function get_invincible():Bool {
 		return dashing || justHurt;
 	}
@@ -151,6 +153,12 @@ class Player extends FlxSprite {
 	private var _touchPoint:FlxPoint;
 	private var _touchAngle:Float = 0;
 	#end
+
+	private var _keyMove(get, null):Bool;
+
+	private function get__keyMove():Bool {
+		return _up || _down || _left || _right;
+	}
 
 	public var reviving:Bool = false;
 	public var safeSpot:FlxPoint = new FlxPoint(0, 0);
@@ -318,7 +326,7 @@ class Player extends FlxSprite {
 		/**
 		 * Position fixer
 		 */
-		if (!dashing) {
+		if (!dashing && !_keyMove) {
 			x = Math.round(x);
 			y = Math.round(y);
 		}
@@ -682,7 +690,7 @@ class Player extends FlxSprite {
 	}
 
 	override public function hurt(Damage:Float) {
-		if (get_invincible()) {
+		if (invincible) {
 			return;
 		}
 

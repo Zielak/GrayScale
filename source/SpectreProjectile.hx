@@ -5,8 +5,8 @@ import flixel.FlxSprite;
 import flixel.FlxG;
 
 class SpectreProjectile extends FlxSprite {
-	private var _lifeTime:Float = 0.25;
-	private var _speed:Int = 150;
+	private var _lifeTime:Float = 0.4;
+	private var _speed:Int = 110;
 
 	public function new(X:Float, Y:Float, D:Int):Void {
 		X = Math.round(X);

@@ -12,6 +12,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.input.keyboard.FlxKey;
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.tile.FlxTilemap;
@@ -23,8 +24,13 @@ class PlayState extends FlxState implements IPlayState {
 	private var _map:FlxOgmoLoader;
 	private var _tileMap:FlxTilemap;
 
+	private var _collisions:Collisions;
+
 	private var _hud:HUD;
-	private var _hudCoinsMap:HUDCoinMap;
+
+	// TODO: Move this to HUD itself!
+	public var _hudCoinsMap:HUDCoinMap;
+
 	private var _flashDur:Int = 0;
 	private var _flashing:Bool = false;
 	private var _flashTileOffset:Int = 80;
@@ -39,17 +45,17 @@ class PlayState extends FlxState implements IPlayState {
 
 	private var _playerPos:FlxPoint = new FlxPoint(0, 0);
 
-	private var _coins = new FlxTypedGroup<FlxSprite>();
 	private var _maxCoins:Int = 0;
 
-	private var _decoration = new FlxTypedGroup<FlxSprite>();
+	public var coins = new FlxTypedGroup<FlxSprite>();
+	public var decoration = new FlxTypedGroup<FlxSprite>();
 
-	private var _projectiles = new FlxTypedGroup<FlxSprite>();
-	private var _crunchers = new FlxTypedGroup<FlxSprite>();
-	private var _spectres = new FlxTypedGroup<FlxSprite>();
+	public var projectiles = new FlxTypedGroup<FlxSprite>();
+	public var crunchers = new FlxTypedGroup<FlxSprite>();
+	public var spectres = new FlxTypedGroup<FlxSprite>();
 
-	private var _bouncyWalls = new FlxTypedGroup<FlxSprite>();
-	private var _effectsGroup = new FlxTypedGroup<FlxSprite>();
+	// public var bouncyWalls = new FlxTypedGroup<FlxSprite>();
+	public var effectsGroup = new FlxTypedGroup<FlxSprite>();
 
 	private var _trailIterator:Int = 0;
 	private var _trailGenerateAt:Int = 0;
@@ -83,16 +89,17 @@ class PlayState extends FlxState implements IPlayState {
 		setupMap();
 
 		_hudCoinsMap = new HUDCoinMap();
-		_hudCoinsMap.updatePoints(_coins.members);
+
+		_hudCoinsMap.updatePoints(coins.members);
 		add(_hudCoinsMap);
 
-		add(_projectiles);
-		add(_effectsGroup);
-		add(_coins);
-		add(_spectres);
+		add(projectiles);
+		add(effectsGroup);
+		add(coins);
+		add(spectres);
 		add(_player);
-		add(_decoration);
-		add(_crunchers);
+		add(decoration);
+		add(crunchers);
 
 		// FlxG.camera.follow(_player, FlxCameraFollowStyle.LOCKON, 1);
 		FlxG.camera.focusOn(new FlxPoint(_player.x, _player.y));
@@ -118,15 +125,14 @@ class PlayState extends FlxState implements IPlayState {
 		_player = null;
 		_playerPos = null;
 
-		_coins = null;
+		coins = null;
+		projectiles = null;
+		crunchers = null;
+		spectres = null;
 
-		_projectiles = null;
-		_crunchers = null;
-		_spectres = null;
+		// bouncyWalls = null;
 
-		_bouncyWalls = null;
-
-		_effectsGroup = null;
+		effectsGroup = null;
 		_music = null;
 	}
 
@@ -138,13 +144,17 @@ class PlayState extends FlxState implements IPlayState {
 		var NONE:Int = FlxObject.NONE;
 		var ANY:Int = FlxObject.ANY;
 
+		_collisions = new Collisions(this);
+
+		var ROW_SIZE:Int = 16;
+
 		_map = new FlxOgmoLoader(PlayList.instance.currentLevelName);
 		_tileMap = _map.loadTilemap(Images.tilemap2__png, 16, 16, "walls");
 
 		FlxG.worldBounds.set(_tileMap.x, _tileMap.y, _tileMap.width, _tileMap.height);
 
 		_tileMap.setTileProperties(0, NONE);
-		_tileMap.setTileProperties(1, NONE, voidCallback);
+		_tileMap.setTileProperties(1, NONE, _collisions.voidCallback);
 		_tileMap.setTileProperties(0 + _flashTileOffset, NONE);
 		_tileMap.setTileProperties(1 + _flashTileOffset, NONE);
 
@@ -159,19 +169,19 @@ class PlayState extends FlxState implements IPlayState {
 			_tileMap.setTileProperties(i, NONE);
 			_tileMap.setTileProperties(i + _flashTileOffset, NONE);
 
-			_tileMap.setTileProperties(i + 16, NONE);
-			_tileMap.setTileProperties(i + 16 + _flashTileOffset, NONE);
+			_tileMap.setTileProperties(i + ROW_SIZE, NONE);
+			_tileMap.setTileProperties(i + ROW_SIZE + _flashTileOffset, NONE);
 
-			_tileMap.setTileProperties(i + 32, NONE);
-			_tileMap.setTileProperties(i + 32 + _flashTileOffset, NONE);
+			_tileMap.setTileProperties(i + ROW_SIZE * 2, NONE);
+			_tileMap.setTileProperties(i + ROW_SIZE * 2 + _flashTileOffset, NONE);
 		}
 
 		// Bouncy walls
 		for (i in 23...27) {
-			_tileMap.setTileProperties(i, ANY, bouncyCallback);
-			_tileMap.setTileProperties(i + _flashTileOffset, ANY, bouncyCallback);
-			_tileMap.setTileProperties(i + 16, ANY, bouncyCallback);
-			_tileMap.setTileProperties(i + 16 + _flashTileOffset, ANY, bouncyCallback);
+			_tileMap.setTileProperties(i, ANY, _collisions.bouncyCallback);
+			_tileMap.setTileProperties(i + _flashTileOffset, ANY, _collisions.bouncyCallback);
+			_tileMap.setTileProperties(i + ROW_SIZE, ANY, _collisions.bouncyCallback);
+			_tileMap.setTileProperties(i + ROW_SIZE + _flashTileOffset, ANY, _collisions.bouncyCallback);
 		}
 
 		// One-way tiles
@@ -233,22 +243,22 @@ class PlayState extends FlxState implements IPlayState {
 		// COLLISIONS
 		// ============
 
-		FlxG.collide(_player, _decoration, playerCollidesTilemap);
-		FlxG.collide(_player, _tileMap, playerCollidesTilemap);
-		FlxG.overlap(_player, _coins, playerOverlapsCoin);
-		FlxG.overlap(_player, _projectiles, playerOverlapsProjectile);
-		FlxG.overlap(_player, _crunchers, playerOverlapsCruncher);
-		FlxG.overlap(_player, _spectres, playerOverlapsSpectre);
+		FlxG.collide(_player, decoration, _collisions.playerCollidesTilemap);
+		FlxG.collide(_player, _tileMap, _collisions.playerCollidesTilemap);
+		FlxG.overlap(_player, coins, _collisions.playerOverlapsCoin);
+		FlxG.overlap(_player, projectiles, _collisions.playerOverlapsProjectile);
+		FlxG.overlap(_player, crunchers, _collisions.playerOverlapsCruncher);
+		FlxG.overlap(_player, spectres, _collisions.playerOverlapsSpectre);
 
-		FlxG.collide(_crunchers, null, CrunchersOverlapEachother);
+		FlxG.collide(crunchers, null, _collisions.CrunchersOverlapEachother);
 
-		FlxG.overlap(_spectres, null, SpectresOverlapEachother);
-		FlxG.collide(_spectres, _tileMap);
+		FlxG.overlap(spectres, null, _collisions.SpectresOverlapEachother);
+		FlxG.collide(spectres, _tileMap);
 
 		// ============
 		// HUD STUFF
 		// ============
-		_hud.updateHUD(_player.dashCooldown, _player.dashing, _coins.countLiving(), ScoreManager.instance.score);
+		_hud.updateHUD(_player.dashCooldown, _player.dashing, coins.countLiving(), ScoreManager.instance.score);
 		_hudCoinsMap.updateTarget(_player.x, _player.y);
 
 		updateFlashings();
@@ -261,8 +271,33 @@ class PlayState extends FlxState implements IPlayState {
 			if (_trailIterator >= _trailGenerateAt) {
 				_trailIterator = 0;
 				var newTrail = new PlayerTrail(_player.x - _player.offset.x, _player.y - _player.offset.y);
-				_effectsGroup.add(newTrail);
+				effectsGroup.add(newTrail);
 			}
+		}
+
+		// ============
+		// ENEMY ATTACKS
+		// ============
+		// Slomo while cruncher is nearby and charging at you
+
+		var timeScale = 1.0;
+		crunchers.forEachAlive(function(C) {
+			var cruncher = cast(C, Cruncher);
+
+			if (cruncher.state == Attacking) {
+				var _distance = FlxMath.distanceBetween(cruncher, player);
+				var _maxDist = 75;
+
+				if (_distance < _maxDist) {
+					var _minTimeScale = 0.25;
+					var _distPerc = _distance / _maxDist;
+					timeScale = Math.max(_minTimeScale, _minTimeScale + _distPerc * (1.0 - _minTimeScale));
+				}
+			}
+		});
+		if (timeScale <= 1) {
+			FlxG.timeScale = timeScale;
+			// trace('timeScale: ' + FlxG.timeScale);
 		}
 
 		// Camera fix?
@@ -288,17 +323,17 @@ class PlayState extends FlxState implements IPlayState {
 		if (entityName == "player") {
 			_player = new Player(x, y);
 		} else if (entityName == "coin") {
-			// if(_coins.length == 0){
+			// if(coins.length == 0){
 			var coin = new Coin(x, y);
-			_coins.add(coin);
+			coins.add(coin);
 			_maxCoins++;
 			// }
 		} else if (entityName == "ECruncher") {
 			var enemy = new Cruncher(x, y);
-			_crunchers.add(enemy);
+			crunchers.add(enemy);
 		} else if (entityName == "ESpectre") {
 			var enemy = new Spectre(x, y);
-			_spectres.add(enemy);
+			spectres.add(enemy);
 		} else if (entityName == "boulder") {
 			var deco = new FlxSprite(Math.round(x), Math.round(y));
 			deco.loadGraphic(Images.boulders__png, true, 32, 32);
@@ -306,13 +341,11 @@ class PlayState extends FlxState implements IPlayState {
 			deco.animation.play("idle");
 			deco.animation.frameIndex = FlxG.random.int(0, 3);
 
-			deco.offset.x = 4;
-			deco.offset.y = 4;
 			deco.setSize(24, 24);
 
 			deco.immovable = true;
 
-			_decoration.add(deco);
+			decoration.add(deco);
 		}
 	}
 
@@ -366,210 +399,7 @@ class PlayState extends FlxState implements IPlayState {
 		}
 	}
 
-	/**
-	 * Player colides Tilemap
-	 */
-	private function playerCollidesTilemap(P:FlxObject, T:FlxObject):Void {
-		if (_player.dashing) {
-			_player.bounce(bounceSprite(_player, _player.direction));
-		}
-	}
-
-	/**
-	 * Gets new direction for sprite based on current direction and which face of the tile it's touching
-	 * @param  S   Sprite to be redirected
-	 * @param  dir Current sprite's direction
-	 * @return     New direction Enum, see FlxObject.DOWN etc
-	 */
-	private function bounceSprite(S:FlxSprite, dir:Int):Int {
-		var DOWN = FlxObject.DOWN;
-		var LEFT = FlxObject.LEFT;
-		var UP = FlxObject.UP;
-		var RIGHT = FlxObject.RIGHT;
-		var newDirection = 0x0000;
-
-		if (S.touching == DOWN | LEFT) {
-			newDirection = UP | RIGHT;
-		}
-		if (S.touching == DOWN | RIGHT) {
-			newDirection = UP | LEFT;
-		}
-		if (S.touching == UP | LEFT) {
-			newDirection = DOWN | RIGHT;
-		}
-		if (S.touching == UP | RIGHT) {
-			newDirection = DOWN | LEFT;
-		}
-
-		if (S.touching == UP) {
-			if (dir == UP | RIGHT)
-				newDirection = DOWN | RIGHT;
-			if (dir == UP | LEFT)
-				newDirection = DOWN | LEFT;
-			if (dir == UP)
-				newDirection = DOWN;
-		}
-
-		if (S.touching == DOWN) {
-			if (dir == DOWN | RIGHT)
-				newDirection = UP | RIGHT;
-			if (dir == DOWN | LEFT)
-				newDirection = UP | LEFT;
-			if (dir == DOWN)
-				newDirection = UP;
-		}
-
-		if (S.touching == LEFT) {
-			if (dir == LEFT | UP)
-				newDirection = RIGHT | UP;
-			if (dir == LEFT | DOWN)
-				newDirection = RIGHT | DOWN;
-			if (dir == LEFT)
-				newDirection = RIGHT;
-		}
-
-		if (S.touching == RIGHT) {
-			if (dir == RIGHT | UP)
-				newDirection = LEFT | UP;
-			if (dir == RIGHT | DOWN)
-				newDirection = LEFT | DOWN;
-			if (dir == RIGHT)
-				newDirection = LEFT;
-		}
-		return newDirection;
-	}
-
-	/**
-	 * Player over Void!
-	 */
-	private function voidCallback(T:FlxObject, P:FlxObject):Void {
-		var type = Type.getClassName(Type.getClass(P));
-
-		// trace("Void collision with " + type);
-
-		if (type == "Player") {
-			_player.onVoid = true;
-			if (!_player.dashing && !_player.reviving) {
-				// Faulty below. Can land between 4 void tiles, right in the middle...
-				if (T.overlapsPoint(_player.getMidpoint())) {
-					ScoreManager.instance.reducePointsFor("void");
-					hurtPlayer(true);
-				}
-			}
-		} else if (type == "enemies.Spectre") {
-			if (cast(P, Spectre).alive) {
-				cast(P, Spectre).kill();
-				ScoreManager.instance.addPointsFor("spectreVoid");
-			}
-		}
-	}
-
-	/**
-	 * Player collides BouncyWall
-	 */
-	private function bouncyCallback(T:FlxObject, P:FlxObject):Void {
-		if (_player.dashing) {
-			_player.bounce(bounceSprite(_player, _player.direction), true);
-
-			if (T.touching == FlxObject.LEFT || T.touching == FlxObject.RIGHT) {
-				FlxG.camera.shake(0.05, 0.13, null, true, flixel.util.FlxAxes.X);
-			} else {
-				FlxG.camera.shake(0.05, 0.13, null, true, flixel.util.FlxAxes.X);
-			}
-			Achievements.instance.thisIsHowIBounce();
-			flashHUD(3);
-		}
-	}
-
-	/**
-	 * Player over Coin
-	 */
-	private function playerOverlapsCoin(P:FlxObject, C:FlxObject):Void {
-		if (_player.dashing) {
-			if (P.alive && P.exists && C.alive && C.exists) {
-				_player.collectedCoin();
-				C.kill();
-				ScoreManager.instance.addPointsFor("coin");
-			}
-			// trace("Coins left: "+_coins.countLiving());
-			if (_coins.countLiving() == 0) {
-				// trace("pre-levelFinished");
-				levelFinished();
-			} else {
-				var newCoins = new Array<FlxSprite>();
-				_coins.forEachAlive(function(spr) {
-					newCoins.push(spr);
-				});
-				_hudCoinsMap.updatePoints(newCoins);
-			}
-		} else if (!_player.dashing && C.alive) {
-			FlxObject.separate(P, C);
-		}
-	}
-
-	private function playerOverlapsCruncher(P:FlxObject, E:FlxObject):Void {
-		if (_player.dashing) {
-			// Kill it! Points!
-			if (E.alive) {
-				E.kill();
-				ScoreManager.instance.addPointsFor("cruncher");
-				FlxG.camera.shake(0.02, 0.2);
-			}
-		} else {
-			if (E.alive && _player.alive) {
-				// Well, you're dead
-				hurtPlayer();
-			}
-		}
-	}
-
-	private function playerOverlapsSpectre(P:FlxObject, E:FlxObject):Void {
-		// Can do nothing to kill spectre right now... or can you?
-		// if(_player.dashing){
-		//   // Kill it! Points!
-		//   if(E.alive){
-		//     E.kill();
-		//     ScoreManager.instance.addPointsFor("spectre");
-		//     FlxG.camera.shake(0.02, 0.2);
-		//   }
-		// }else{
-		//   if(E.alive){
-		//     // Well, you're dead
-		//     _player.kill();
-		//   }
-		// }
-	}
-
-	private function playerOverlapsProjectile(P:FlxObject, E:FlxObject):Void {
-		if (!_player.dashing) {
-			if (E.alive && _player.alive) {
-				// Well, you're dead
-				hurtPlayer();
-			}
-		}
-	}
-
-	private function SpectresOverlapEachother(A:FlxObject, B:FlxObject):Void {
-		if (A.alive && B.alive) {
-			// trace("Spectres collide");
-			cast(A, Spectre).stepBack();
-		}
-	}
-
-	private function SpectresOverlapTilemap(S:FlxObject, T:FlxObject):Void {
-		// Didn't had time to do it well...
-		// trace("Spectres collides wall");
-		// trace(T);
-		// cast(S, Spectre).stepBack();
-	}
-
-	private function CrunchersOverlapEachother(A:FlxObject, B:FlxObject):Void {
-		if (A.alive && B.alive) {
-			FlxObject.separate(A, B);
-		}
-	}
-
-	private function levelFinished():Void {
+	public function levelFinished():Void {
 		if (_music.playing) {
 			// trace("stopping music");
 			_music.stop();
@@ -599,7 +429,7 @@ class PlayState extends FlxState implements IPlayState {
 	 * Kill player and optionally revive him into last known safe position
 	 * @param  void if true, then player can go back to last known position
 	 */
-	private function hurtPlayer(?void:Bool = false):Void {
+	public function hurtPlayer(?void:Bool = false):Void {
 		if (void) {
 			// trace("I'm trying to get you back at safe spot...");
 			Achievements.instance.diedFromVoid();
@@ -630,18 +460,18 @@ class PlayState extends FlxState implements IPlayState {
 
 		newEffect.velocity.copyFrom(velocity);
 
-		_effectsGroup.add(newEffect);
+		effectsGroup.add(newEffect);
 
 		return newEffect;
 	}
 
 	public function addProjectile(S:Dynamic):Void {
-		_projectiles.add(cast(S, FlxSprite));
+		projectiles.add(cast(S, FlxSprite));
 	}
 
 	public function addProjectiles(A:Array<Dynamic>):Void {
 		for (s in A) {
-			_projectiles.add(cast(s, FlxSprite));
+			projectiles.add(cast(s, FlxSprite));
 		}
 	}
 }

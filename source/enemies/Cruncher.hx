@@ -34,6 +34,13 @@ class Cruncher extends Enemy {
 	}
 
 	private var _state:CruncherMind;
+
+	public var state(get, null):CruncherMind;
+
+	public function get_state():CruncherMind {
+		return _state;
+	}
+
 	private var _targetPos:FlxPoint = new FlxPoint();
 	private var _targetAngle:Float = 0;
 	private var _inRange:Bool = false;
