@@ -9,13 +9,15 @@ class SpectreProjectile extends FlxSprite {
 	private var _speed:Int = 110;
 
 	public function new(X:Float, Y:Float, D:Int):Void {
-		X = Math.round(X);
-		Y = Math.round(Y);
+		X = Math.round(X + 3);
+		Y = Math.round(Y + 3);
 		super(X, Y);
 
 		loadGraphic(Images.spectreProjectile__png, true, 16, 16);
-
 		animation.add("idle", [0, 1, 2, 3], 1, false);
+
+		setSize(10, 10);
+		offset.set(3, 3);
 
 		switch (D) {
 			case 0x0001: // LEFT

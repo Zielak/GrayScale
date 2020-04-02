@@ -279,26 +279,7 @@ class PlayState extends FlxState implements IPlayState {
 		// ENEMY ATTACKS
 		// ============
 		// Slomo while cruncher is nearby and charging at you
-
-		var timeScale = 1.0;
-		crunchers.forEachAlive(function(C) {
-			var cruncher = cast(C, Cruncher);
-
-			if (cruncher.state == Attacking) {
-				var _distance = FlxMath.distanceBetween(cruncher, player);
-				var _maxDist = 75;
-
-				if (_distance < _maxDist) {
-					var _minTimeScale = 0.25;
-					var _distPerc = _distance / _maxDist;
-					timeScale = Math.max(_minTimeScale, _minTimeScale + _distPerc * (1.0 - _minTimeScale));
-				}
-			}
-		});
-		if (timeScale <= 1) {
-			FlxG.timeScale = timeScale;
-			// trace('timeScale: ' + FlxG.timeScale);
-		}
+		adjustTimescale();
 
 		// Camera fix?
 		FlxG.camera.x = Math.round(FlxG.camera.x);
@@ -396,6 +377,31 @@ class PlayState extends FlxState implements IPlayState {
 
 		for (i in 0...tiles.length) {
 			_tileMap.setTileByIndex(i, tiles[i] - _flashTileOffset);
+		}
+	}
+
+	private function adjustTimescale() {
+		if (player.dashing) {
+			return;
+		}
+
+		var timeScale = 1.0;
+		crunchers.forEachAlive(function(C) {
+			var cruncher = cast(C, Cruncher);
+
+			if (cruncher.state == Attacking) {
+				var _distance = FlxMath.distanceBetween(cruncher, player);
+				var _maxDist = 75;
+
+				if (_distance < _maxDist) {
+					var _minTimeScale = 0.25;
+					var _distPerc = _distance / _maxDist;
+					timeScale = Math.max(_minTimeScale, _minTimeScale + _distPerc * (1.0 - _minTimeScale));
+				}
+			}
+		});
+		if (timeScale <= 1) {
+			FlxG.timeScale = timeScale;
 		}
 	}
 
