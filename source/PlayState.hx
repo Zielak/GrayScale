@@ -1,10 +1,11 @@
 package;
 
+import flixel.addons.editors.ogmo.FlxOgmo3Loader;
+import flixel.util.FlxColor;
 import AssetPaths.Musics;
 import AssetPaths.Images;
 import enemies.Cruncher;
 import enemies.Spectre;
-import flixel.addons.editors.ogmo.FlxOgmoLoader;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -21,7 +22,7 @@ class PlayState extends FlxState implements IPlayState {
 	private static inline var TILE_WIDTH:Int = 16;
 	private static inline var TILE_HEIGHT:Int = 16;
 
-	private var _map:FlxOgmoLoader;
+	private var _map:FlxOgmo3Loader;
 	private var _tileMap:FlxTilemap;
 
 	private var _collisions:Collisions;
@@ -78,6 +79,7 @@ class PlayState extends FlxState implements IPlayState {
 		// FlxG.debugger.drawDebug = true;
 
 		FlxG.timeScale = 1;
+		FlxG.camera.bgColor = FlxColor.BLACK;
 
 		_music = new FlxSound();
 		_music.loadEmbedded(Musics.music_grayscale_theme__ogg, true);
@@ -148,8 +150,8 @@ class PlayState extends FlxState implements IPlayState {
 
 		var ROW_SIZE:Int = 16;
 
-		_map = new FlxOgmoLoader(PlayList.instance.currentLevelName);
-		_tileMap = _map.loadTilemap(Images.tilemap2__png, 16, 16, "walls");
+		_map = new FlxOgmo3Loader("assets/maps/maps.ogmo", PlayList.instance.currentLevelName);
+		_tileMap = _map.loadTilemap(Images.tilemap2__png, "walls");
 
 		FlxG.worldBounds.set(_tileMap.x, _tileMap.y, _tileMap.width, _tileMap.height);
 
@@ -196,6 +198,8 @@ class PlayState extends FlxState implements IPlayState {
 
 		add(_tileMap);
 		_map.loadEntities(placeEntities, "entities");
+		_map.loadEntities(placeEntities, "decoration");
+		_map.loadEntities(placeEntities, "coins");
 	}
 
 	/**
@@ -295,27 +299,26 @@ class PlayState extends FlxState implements IPlayState {
 	/**
 	 * Place all entities from Ogmo project map
 	 */
-	private function placeEntities(entityName:String, entityData:Xml):Void {
-		var x:Int = Std.parseInt(entityData.get("x"));
-		var y:Int = Std.parseInt(entityData.get("y"));
-		x = Math.round(x);
-		y = Math.round(y);
+	// private function placeEntities(entityName:String, entityData:Xml):Void {
+	private function placeEntities(entity:EntityData):Void {
+		var x = Math.round(entity.x);
+		var y = Math.round(entity.y);
 
-		if (entityName == "player") {
+		if (entity.name == "player") {
 			_player = new Player(x, y);
-		} else if (entityName == "coin") {
+		} else if (entity.name == "coin") {
 			// if(coins.length == 0){
 			var coin = new Coin(x, y);
 			coins.add(coin);
 			_maxCoins++;
 			// }
-		} else if (entityName == "ECruncher") {
+		} else if (entity.name == "cruncher") {
 			var enemy = new Cruncher(x, y);
 			crunchers.add(enemy);
-		} else if (entityName == "ESpectre") {
+		} else if (entity.name == "spectre") {
 			var enemy = new Spectre(x, y);
 			spectres.add(enemy);
-		} else if (entityName == "boulder") {
+		} else if (entity.name == "boulder") {
 			var deco = new FlxSprite(Math.round(x), Math.round(y));
 			deco.loadGraphic(Images.boulders__png, true, 32, 32);
 			deco.animation.add("idle", [0, 1, 2, 3], 0);
@@ -354,6 +357,9 @@ class PlayState extends FlxState implements IPlayState {
 		// _hud.flash(duration);
 
 		if (!_flashing) {
+			trace('Flash plz!');
+
+			FlxG.camera.bgColor = FlxColor.WHITE;
 			// Swap tiles!
 			var tiles = _tileMap.getData();
 			for (i in 0...tiles.length) {
@@ -372,6 +378,7 @@ class PlayState extends FlxState implements IPlayState {
 	private function flashOff():Void {
 		// trace("Flash off!");
 		_flashing = false;
+		FlxG.camera.bgColor = FlxColor.BLACK;
 
 		var tiles = _tileMap.getData();
 

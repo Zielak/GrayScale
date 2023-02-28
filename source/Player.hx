@@ -194,8 +194,11 @@ class Player extends FlxSprite {
 		setSize(8, 8);
 		offset.set(4, 4);
 
-		safeSpot.x = X;
-		safeSpot.x = Y;
+		x += 4;
+		y += 4;
+
+		safeSpot.x = x;
+		safeSpot.y = y;
 
 		_inputGamepad = false;
 

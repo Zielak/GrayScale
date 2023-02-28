@@ -83,14 +83,14 @@ class PlayList {
 		// Init ?
 		_firstEntry = true;
 		_levelList = [
-			"assets/maps/intro1.oel",
-			"assets/maps/intro2.oel",
-			"assets/maps/level1.oel",
-			"assets/maps/level2.oel",
-			"assets/maps/level3.oel",
-			"assets/maps/level4.oel",
-			"assets/maps/level6.oel",
-			"assets/maps/theend.oel"
+			"assets/maps/intro1.json",
+			"assets/maps/intro2.json",
+			"assets/maps/level1.json",
+			"assets/maps/level2.json",
+			"assets/maps/level3.json",
+			"assets/maps/level4.json",
+			"assets/maps/level6.json",
+			"assets/maps/theend.json"
 		];
 		_lastIntroLevel = 1;
 		_currentLevel = 0;

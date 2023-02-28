@@ -15,7 +15,7 @@ class Collisions {
 	/**
 	 * Player colides Tilemap
 	 */
-	public function playerCollidesTilemap(P:FlxObject, T:FlxObject):Void {
+	public function playerCollidesTilemap(P:FlxObject, TM:FlxObject):Void {
 		var player = cast(P, Player);
 		if (player.dashing) {
 			player.bounce(bounceSprite(player, player.direction));
